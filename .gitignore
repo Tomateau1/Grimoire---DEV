@@ -1,0 +1,148 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/modules.xml
+/contentModel.xml
+/.idea.Gast.iml
+
+# Ignore all files by default, but scan all directories.
+*
+!*/
+
+# Do not ignore git files in the root of the repo.
+!/.git*
+
+# Do not ignore current project's `.uproject`.
+!/*.uproject
+
+# Do not ignore png files, mostly for icons and logos.
+!/*.png
+
+# Do not ignore source, config, plugins and saved dirs.
+# Still excludes other dirs than windowseditor in saved.
+!/Source/**
+!/Config/**
+!/Build/Android/**
+!/Build/IOS/Resources/Graphics/**
+# Allow plugins important folders
+!/Plugins/**/Config/*
+!/Plugins/**/Content/*
+!/Plugins/**/Resources/*
+!/Plugins/**/Source/*
+!/Plugins/**/ThirdParty/*
+# Remove plugins built folders
+/Plugins/**/Intermediate/*
+/Plugins/**/Binaries/*
+/Plugins/**/Saved/*
+!/Content/Movies/**
+!/Binaries/**
+/Binaries/**/*.pdb
+/Binaries/**/*.exe
+
+/Intermediate
+/Saved
+# Remove HoloLens platform files
+/Platforms/HoloLens
+/Config/HoloLens
+# Remove RiderLink plugin
+/Plugins/Developer/RiderLink
+# Remove .idea folder
+/.idea
+/Binaries
+
+# Only allow .uasset and .umap files from /Content dir.
+# They're tracked by git-lfs, don't forget to track other
+# files if adding them here.
+!/Content/**/*.uasset
+!/Content/**/*.umap
+!/Content/Localization/Game/**
+!/Content/Localization/Spacenap/**
+!/Plugins/**/*.uasset
+!/Plugins/**/*.umap
+
+# Shader formats
+!/Content/**/*.usf
+!/Content/**/*.ush
+!/Content/**/*.hlsl
+!/Content/**/*.glsl
+
+# Allow any files from /RawContent dir.
+# Any file in /RawContent dir will be managed by git lfs.
+!/RawContent/**/*
+
+# C/C++ source files
+!*.c
+!*.cc
+!*.cpp
+!*.cpp.template
+!*.h
+*.generated.h
+!*.h.template
+!*.hpp
+!*.inl
+!*.inc
+!*.m
+!*.mm
+!*.rc
+!*.rc2
+!*.def
+!*.exp
+!*.manifest
+
+# Java source files
+!*.java
+!*.java.template
+
+# C# source files
+!*.cs
+!*.cs.template
+!*.aspx
+!*.resx
+
+# Text files
+!*.txt
+!*.md
+
+# Swift files
+*.swift
+
+# Script files
+!*.bat
+!*.sh
+!*.pl
+!*.py
+!*.ps1
+!*.js
+!*.ts
+!*.tsx
+!*.command
+
+# Other configuration and markup files
+!*.ini
+!*.json
+!*.tps
+!*.xml
+!*.xaml
+!*.uproject
+!*.uplugin
+!*.html
+!*.html.template
+!*.css
+!*.udn
+!*.config
+!*.version
+!.git*
+!.editorconfig
+!.plist
+
+# OS/platform generated files.
+
+# Windows
+ehthumbs.db
+Thumbs.db
+
+# Visual Studio
+.vs
+.vscode
