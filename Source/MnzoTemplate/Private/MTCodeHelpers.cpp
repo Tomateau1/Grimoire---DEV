@@ -19,7 +19,11 @@ bool UMTCodeHelpers::RestoreBackupIfCorrupted(const FString& MainSlot, const FSt
 		{
 			return FM.Copy(*MainPath, *BackupPath, true, true) == COPY_OK;
 		}
+		
+		return false;
 	}
+	
+	return true;
 }
 
 FVector2D UMTCodeHelpers::GetWindowPosition()
