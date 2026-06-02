@@ -58,7 +58,7 @@
 !/Content/**/*.uasset
 !/Content/**/*.umap
 !/Content/Localization/Game/**
-!/Content/Localization/Spacenap/**
+!/Content/Localization/Grimoire/**
 !/Plugins/**/*.uasset
 !/Plugins/**/*.umap
 
