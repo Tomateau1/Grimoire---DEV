@@ -3,27 +3,152 @@
 
 #include "Grimoire/Public/MTCodeHelpers.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Kismet/GameplayStatics.h"
+#include "Serialization/BufferArchive.h"
 
-bool UMTCodeHelpers::RestoreBackupIfCorrupted(const FString& MainSlot, const FString& BackupSlot)
+bool UMTCodeHelpers::SaveGameWithChecksum(USaveGame* SaveGameObject, FString SlotName, int32 UserIndex)
 {
-	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames/");
-	FString MainPath = SaveDir + MainSlot + TEXT(".sav");
-	FString BackupPath = SaveDir + BackupSlot + TEXT(".sav");
+	if (!SaveGameObject) return false;
+	
+	TArray<uint8> ObjectBytes;
+	if (!UGameplayStatics::SaveGameToMemory(SaveGameObject, ObjectBytes)) return false;
+	
+	FSaveHeader Header;
+	Header.PayloadSize = static_cast<uint32>(ObjectBytes.Num());
+	Header.Checksum = FCrc::MemCrc32(ObjectBytes.GetData(), ObjectBytes.Num());
+	
+	TArray<uint8> FinalData;
+	FMemoryWriter Writer(FinalData);
+	Writer << Header;
 
-	IFileManager& FM = IFileManager::Get();
-	int64 Size = FM.FileSize(*MainPath);
-
-	if (Size <= 0 || !FM.FileExists(*MainPath))
+	if (ObjectBytes.Num() > 0)
 	{
-		if (FM.FileExists(*BackupPath))
-		{
-			return FM.Copy(*MainPath, *BackupPath, true, true) == COPY_OK;
-		}
-		
-		return false;
+		Writer.Serialize(ObjectBytes.GetData(), ObjectBytes.Num());	
 	}
 	
-	return true;
+	Writer.Close();
+	return UGameplayStatics::SaveDataToSlot(FinalData, SlotName, UserIndex);
+}
+
+USaveGame* UMTCodeHelpers::LoadGameWithSanityCheck(FString SlotName, int32 UserIndex)
+{
+	TArray<uint8> RawData;
+	if (!UGameplayStatics::LoadDataFromSlot(RawData, SlotName, UserIndex)) return nullptr;
+	
+	FMemoryReader Reader(RawData);
+	FSaveHeader Header;
+	Reader << Header;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Magic=%u Version=%u Payload=%u"),
+	Header.MagicNumber,
+	Header.SaveVersion,
+	Header.PayloadSize);
+
+	if (RawData.Num() < sizeof(FSaveHeader))
+	{
+		return nullptr;
+	}
+	else if (Header.MagicNumber != Magic || Header.SaveVersion != Version)
+	{
+		USaveGame* LegacySave = UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex);
+
+		if (LegacySave)
+		{
+			SaveGameWithChecksum(LegacySave, SlotName, UserIndex);
+		}
+		return LegacySave;
+	}
+	
+	const int64 Remaining = Reader.TotalSize() - Reader.Tell();
+	if (Header.PayloadSize > static_cast<uint32>(Remaining))
+	{
+		return nullptr;
+	}
+	
+	TArray<uint8> BodyBytes;
+	BodyBytes.SetNumUninitialized(Header.PayloadSize);
+
+	if (Header.PayloadSize > 0)
+	{
+		Reader.Serialize(BodyBytes.GetData(), Header.PayloadSize);
+	}
+	
+	const uint32 ActualCrc = FCrc::MemCrc32(BodyBytes.GetData(), BodyBytes.Num());
+	if (ActualCrc != Header.Checksum)
+	{
+		return nullptr;
+	}
+
+	return UGameplayStatics::LoadGameFromMemory(BodyBytes);
+}
+
+void UMTCodeHelpers::CopyTempSave()
+{
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames/");
+	FString TempPath = SaveDir + "TempSave" + TEXT(".sav");
+	FString MainPath = SaveDir + "PlayerSave" + TEXT(".sav");
+	FString BackupPath = SaveDir + "PlayerSaveArchive" + TEXT(".sav");
+	
+	IFileManager& FM = IFileManager::Get();
+
+	FM.Copy(*MainPath, *TempPath, true, true);
+	FM.Delete(*TempPath);
+}
+
+void UMTCodeHelpers::RestoreBackup()
+{
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames/");
+	FString MainPath = SaveDir + "PlayerSave" + TEXT(".sav");
+	FString BackupPath = SaveDir + "PlayerSaveArchive" + TEXT(".sav");
+
+	IFileManager& FM = IFileManager::Get();
+
+	FM.Copy(*MainPath, *BackupPath, true, true);
+
+}
+
+void UMTCodeHelpers::ArchivePlayerSave()
+{
+	FString SaveDir = FPaths::ProjectSavedDir() / TEXT("SaveGames/");
+	FString MainPath = SaveDir + "PlayerSave" + TEXT(".sav");
+	FString BackupPath = SaveDir + "PlayerSaveArchive" + TEXT(".sav");
+	
+	TArray<uint8> RawData;
+	if (!UGameplayStatics::LoadDataFromSlot(RawData, TEXT("PlayerSave"), 0))
+		return;
+
+	FMemoryReader Reader(RawData);
+	FSaveHeader Header;
+	Reader << Header;
+
+	if (Header.MagicNumber != Magic || Header.SaveVersion != Version)
+		return;
+
+	const int64 Remaining = Reader.TotalSize() - Reader.Tell();
+	if (Header.PayloadSize > static_cast<uint32>(Remaining))
+		return;
+
+	TArray<uint8> BodyBytes;
+	BodyBytes.SetNumUninitialized(Header.PayloadSize);
+	if (Header.PayloadSize > 0)
+		Reader.Serialize(BodyBytes.GetData(), Header.PayloadSize);
+
+	const uint32 ActualCrc = FCrc::MemCrc32(BodyBytes.GetData(), BodyBytes.Num());
+	if (ActualCrc != Header.Checksum)
+		return;
+	
+	IFileManager& FM = IFileManager::Get();
+
+	FM.Copy(*BackupPath, *MainPath, true, true);
+}
+
+void UMTCodeHelpers::ClearUserSettingsCache()
+{
+	if (GConfig)
+	{
+		GConfig->EmptySection(TEXT("WindowSettings"), GGameUserSettingsIni);
+		GConfig->Flush(false, GGameUserSettingsIni);
+	}
 }
 
 FVector2D UMTCodeHelpers::GetWindowPosition()
