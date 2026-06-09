@@ -2,6 +2,8 @@
 
 
 #include "Grimoire/Public/MTCodeHelpers.h"
+
+#include "Components/DecalComponent.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Kismet/GameplayStatics.h"
 #include "Serialization/BufferArchive.h"
@@ -212,3 +214,11 @@ TArray<float> UMTCodeHelpers::SortFloatArrayAscending(const TArray<float> InputA
 	SortedArray.Sort();
 	return SortedArray;
 }
+
+void UMTCodeHelpers::SetDecalSize(UDecalComponent* DecalComponent, FVector NewSize)
+{
+	DecalComponent->DecalSize = NewSize;
+	
+	DecalComponent->MarkRenderStateDirty();
+}
+	

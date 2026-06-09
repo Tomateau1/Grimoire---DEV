@@ -70,4 +70,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Sorting")
 	static TArray<float> SortFloatArrayAscending(const TArray<float> InputArray);
+	
+	UFUNCTION(BlueprintCallable, Category = "Decals")
+	static void SetDecalSize(UDecalComponent* decal, FVector size);
 };
