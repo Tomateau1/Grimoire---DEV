@@ -46,6 +46,10 @@
 		{
 			"Name": "GameplayStateTree",
 			"Enabled": true
+		},
+		{
+			"Name": "AIAssistant",
+			"Enabled": true
 		}
 	]
 }
