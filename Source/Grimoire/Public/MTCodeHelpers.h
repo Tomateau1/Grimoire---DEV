@@ -56,6 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "File")
 	static void ClearUserSettingsCache();
 	
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	static void SetPauseThroughCode(APlayerController* PlayerController, bool bPause);
+	
 	UFUNCTION(BlueprintCallable, Category = "Window")
 	static FVector2D GetWindowPosition();
 

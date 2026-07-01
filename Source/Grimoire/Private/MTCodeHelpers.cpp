@@ -153,6 +153,11 @@ void UMTCodeHelpers::ClearUserSettingsCache()
 	}
 }
 
+void UMTCodeHelpers::SetPauseThroughCode(APlayerController* PlayerController, bool bPause)
+{
+	PlayerController->SetPause(bPause);
+}
+
 FVector2D UMTCodeHelpers::GetWindowPosition()
 {
 	if (FSlateApplication::IsInitialized())
