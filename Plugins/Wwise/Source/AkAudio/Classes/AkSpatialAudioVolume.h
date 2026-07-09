@@ -135,13 +135,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Fit to Geometry", meta = (ClampMin = 0.1875f, ClampMax = 1.0f))
 	float FilterHitPoints = 1.0f;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray<FVector> FitPoints;
 	
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray<FVector> FitNormals;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	TArray< TWeakObjectPtr<class UPhysicalMaterial> > FitMaterials;
 	
 	UPROPERTY()

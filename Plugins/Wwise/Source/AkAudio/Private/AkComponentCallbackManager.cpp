@@ -342,7 +342,7 @@ void FAkComponentCallbackManager::CancelKeyHash(uint32 HashToCancel)
 
 void FAkComponentCallbackManager::RegisterGameObject(AkGameObjectID in_gameObjID)
 {
-	if (FAkComponentCallbackManager_Constants::Optimize::Value == FAkComponentCallbackManager_Constants::Optimize::Speed)
+	if constexpr(FAkComponentCallbackManager_Constants::Optimize::Value == FAkComponentCallbackManager_Constants::Optimize::Speed)
 	{
 		FScopeLock Lock(&CriticalSection);
 		GameObjectToPackagesMap.FindOrAdd(in_gameObjID).Reserve(FAkComponentCallbackManager_Constants::ReserveSize);

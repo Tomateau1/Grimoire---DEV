@@ -47,7 +47,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 #include "PhysicsEngine/BodySetup.h"
 #include "UObject/Object.h"
 
-static const float kVertexNear = 0.0001;
+static const float kVertexNear = 0.0001f;
 
 UAkGeometryComponent::UAkGeometryComponent(const class FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
@@ -60,7 +60,7 @@ UAkGeometryComponent::UAkGeometryComponent(const class FObjectInitializer& Objec
 	CollisionMeshSurfaceOverride.AcousticTexture = nullptr;
 	CollisionMeshSurfaceOverride.bEnableOcclusionOverride = false;
 	CollisionMeshSurfaceOverride.OcclusionValue = 1.f;
-	WeldingThreshold = 0.001;
+	WeldingThreshold = 0.001f;
 
 	bWasAddedByRoom = 0;
 	bEnableDiffraction = 1;

@@ -84,7 +84,8 @@ public class WwiseUEPlatform_WinGDK : WwiseUEPlatform_Windows
 	{
 		string VSVersion = "vc170";
 		var Compiler = Target.WindowsPlatform.Compiler;
-		CheckCompilerVersion(ref VSVersion, Compiler, "VisualStudio2026", "vc180");
+		// No WwiseSDK support for VS2026 on GDK platforms
+		// CheckCompilerVersion(ref VSVersion, Compiler, "VisualStudio2026", "vc180");
 		CheckCompilerVersion(ref VSVersion, Compiler, "VisualStudio2022", "vc170");
 		CheckCompilerVersion(ref VSVersion, Compiler, "VisualStudio2019", "vc160");
 		CheckCompilerVersion(ref VSVersion, Compiler, "VisualStudio2017", "vc150");

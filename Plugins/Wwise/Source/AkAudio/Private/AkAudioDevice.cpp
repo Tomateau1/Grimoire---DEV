@@ -4403,6 +4403,7 @@ void FAkAudioDevice::AddDefaultListener(UAkComponent* in_pListener)
 		in_pListener->IsListener = true;
 		in_pListener->IsDefaultListener = true;
 		UpdateDefaultActiveListeners();
+		OnDefaultListenerAdded.Broadcast(in_pListener);
 		if(auto* AkSettings = GetDefault<UAkSettings>())
 		{
 			in_pListener->SetAttenuationScalingFactor(AkSettings->DefaultListenerScalingFactor);	
@@ -4428,6 +4429,7 @@ void FAkAudioDevice::RemoveDefaultListener(UAkComponent* in_pListener)
 	in_pListener->IsDefaultListener = false;
 	UpdateDefaultActiveListeners();
 
+	OnDefaultListenerRemoved.Broadcast(in_pListener);
 	// We are setting Aux Sends with the SpatialAudio API, and that requires a Spatial Audio listener.
 	// When running dedicated server, Unreal creates a camera manager (default listener 1 gets set as spatial audio listener), then another one (default listener 2), and then destroys the first. This leaves us with a default listener, but no spatial audio listener. This fix targets that issue.
 	if (m_SpatialAudioListener == in_pListener )

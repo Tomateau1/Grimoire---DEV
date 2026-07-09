@@ -47,8 +47,8 @@ Copyright (c) 2026 Audiokinetic Inc.
 #include "Misc/TransactionObjectEvent.h"
 #endif
 
-static const float kScaleEpsilon = 0.001;
-static const float kConvexHullEpsilon = 0.001;
+static const float kScaleEpsilon = 0.001f;
+static const float kConvexHullEpsilon = 0.001f;
 static const FName NAME_SAV_Fit = TEXT("AkSpatialAudioVolumeRaycast");
 
 #if WITH_EDITOR
@@ -841,6 +841,8 @@ void AAkSpatialAudioVolume::PostEditChangeProperty(FPropertyChangedEvent& Proper
 			else
 			{
 				FitPoints.Empty();
+				FitNormals.Empty();
+				FitMaterials.Empty();
 			}
 		}
 		

@@ -499,7 +499,7 @@ FLinearColor WwiseBrowserHelpers::GetTextColor(bool bUpToDate, bool bRequireAtte
 {
 	if (bRequireAttention)
 	{
-		return FLinearColor(0.2, 0.8, 0.9);
+		return FLinearColor(0.2f, 0.f, 0.9f);
 	}
 	else if (bUpToDate)
 	{
@@ -507,7 +507,7 @@ FLinearColor WwiseBrowserHelpers::GetTextColor(bool bUpToDate, bool bRequireAtte
 	}
 	else
 	{
-		return FLinearColor(1.f, 0.33f, 0);
+		return FLinearColor(1.f, 0.33f, 0.f);
 	}
 }
 

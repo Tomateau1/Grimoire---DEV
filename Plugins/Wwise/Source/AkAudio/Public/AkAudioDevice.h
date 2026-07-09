@@ -49,6 +49,8 @@ DECLARE_EVENT(FAkAudioDevice, SoundbanksLoaded);
 DECLARE_EVENT(FAkAudioDevice, FOnWwiseProjectModification);
 DECLARE_EVENT_OneParam(FAkAudioDevice, FOnSwitchValueLoaded, UAkGroupValue*);
 DECLARE_DELEGATE_OneParam(FOnSetCurrentAudioCultureCompleted, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDefaultListenerAdded, UAkComponent*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDefaultListenerRemoved, UAkComponent*);
 
 /*------------------------------------------------------------------------------------
 	Dependencies, helpers & forward declarations.
@@ -1409,6 +1411,9 @@ public:
 	void OnActorSpawned(AActor* SpawnedActor);
 
 	UAkComponentSet& GetDefaultListeners() { return m_defaultListeners; }
+
+	FOnDefaultListenerAdded OnDefaultListenerAdded;
+	FOnDefaultListenerRemoved OnDefaultListenerRemoved;
 
 	void SetListeners(UAkComponent* in_pEmitter, const TArray<TWeakObjectPtr<UAkComponent>>& in_listenerSet);
 	void AddDefaultListener(UAkComponent* in_pListener);

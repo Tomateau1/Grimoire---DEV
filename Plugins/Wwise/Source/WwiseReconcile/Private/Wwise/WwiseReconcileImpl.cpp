@@ -67,7 +67,6 @@ void FWwiseReconcileImpl::GetAllWwiseRefs()
 		return;
 	}
 
-	int Count = 0;
 	for (const auto& WwiseRef : DataStructure.GetCurrentPlatformData()->Guids)
 	{
 		WwiseDBPair<const WwiseDatabaseLocalizableGuidKey, WwiseAnyRef> Pair(WwiseRef);
@@ -76,11 +75,12 @@ void FWwiseReconcileImpl::GetAllWwiseRefs()
 			int A, B, C, D;
 			Pair.GetFirst().Guid.GetGuidValues(A, B, C, D);
 			FGuid Guid(A, B, C, D);
-			GuidToWwiseRef.Add(Guid, { DataStructure.GetCurrentPlatformData()->Guids.At(Count) });
-			ShortIdToWwiseRef.Add(Pair.GetSecond().GetId(), { DataStructure.GetCurrentPlatformData()->Guids.At(Count) });
+			GuidToWwiseRef.Emplace(Guid, FWwiseNewAsset{ &WwiseRef.Value });
+			ShortIdToWwiseRef.Emplace(Pair.GetSecond().GetId(), FWwiseNewAsset{ &WwiseRef.Value });
 		}
-		Count++;
 	}
+	GuidToWwiseRef.Shrink();
+	ShortIdToWwiseRef.Shrink();
 }
 
 bool FWwiseReconcileImpl::IsAssetOutOfDate(const FAssetData& AssetData, const WwiseAnyRef& WwiseRef)
