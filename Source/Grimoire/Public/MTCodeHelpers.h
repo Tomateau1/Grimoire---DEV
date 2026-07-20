@@ -69,6 +69,12 @@ public:
 	static FVector2D GetMonitorSize();
 	
 	UFUNCTION(BlueprintCallable, Category = "Sorting")
+	static TArray<AActor*> GetRandomActors(const TArray<AActor*>& Candidates, int32 Count);
+	
+	UFUNCTION(BlueprintCallable, Category = "Sorting")
+	static TArray<AActor*> GetClosestActors(AActor* Origin, const TArray<AActor*>& Candidates, int32 Count);
+	
+	UFUNCTION(BlueprintCallable, Category = "Sorting")
 	static TArray<FVector2D> NormalizeAndSortVector2DArray(const TArray<FVector2D> Points);
 
 	UFUNCTION(BlueprintCallable, Category = "Sorting")

@@ -195,6 +195,55 @@ FVector2D UMTCodeHelpers::GetMonitorSize()
 	);
 }
 
+TArray<AActor*> UMTCodeHelpers::GetRandomActors(const TArray<AActor*>& Candidates, int32 Count)
+{
+	TArray<AActor*> Valid;
+	Valid.Reserve(Candidates.Num());
+	for (AActor* Actor : Candidates)
+	{
+		if (IsValid(Actor))
+		{
+			Valid.Add(Actor);
+		}
+	}
+	
+	for (int32 i = Valid.Num() - 1; i > 0; --i)
+	{
+		const int32 j = FMath::RandRange(0, i);
+		Valid.Swap(i, j);
+	}
+
+	if (Valid.Num() > Count)
+	{
+		Valid.SetNum(Count);
+	}
+	
+	return Valid;
+}
+
+TArray<AActor*> UMTCodeHelpers::GetClosestActors(AActor* Origin, const TArray<AActor*>& Candidates, int32 Count)
+{
+	if (!IsValid(Origin))
+	{
+		return TArray<AActor*>();
+	}
+	
+	TArray<AActor*> Sorted = Candidates;
+	const FVector OriginLoc = Origin->GetActorLocation();
+	
+	Algo::SortBy(Sorted, [OriginLoc](const AActor* A)
+	{
+		return IsValid(A) ? FVector::DistSquared(A->GetActorLocation(), OriginLoc) : TNumericLimits<float>::Max();
+	});
+	
+	if (Sorted.Num() > Count)
+	{
+		Sorted.SetNum(Count);
+	}
+	
+	return Sorted;
+}
+
 TArray<FVector2D> UMTCodeHelpers::NormalizeAndSortVector2DArray(TArray<FVector2D> Points)
 {
 	for(FVector2D& Link : Points)
