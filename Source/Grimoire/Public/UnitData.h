@@ -30,13 +30,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource")
 	bool IsPassiveResourceEnabled;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource", meta=(EditCondition="IsPassiveResourceEnabled", EditConditionHides))
 	int Segments;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource", meta=(EditCondition="IsPassiveResourceEnabled", EditConditionHides))
 	bool HasIncreaseAnim;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data|Passive|PassiveResource", meta=(EditCondition="IsPassiveResourceEnabled", EditConditionHides))
 	FLinearColor FillColor;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
@@ -66,9 +66,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
 	bool HasMana = true;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource", meta=(EditCondition="HasMana", EditConditionHides))
 	float MaxMana = 100.0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource", meta=(EditCondition="HasMana", EditConditionHides))
 	float ManaGain;
 };
