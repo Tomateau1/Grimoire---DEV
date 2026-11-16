@@ -5,9 +5,9 @@ The content of this file may not be used without valid licenses to the
 AUDIOKINETIC Wwise Technology.
 Note that the use of the game engine is subject to the Unreal(R) Engine End User
 License Agreement at https://www.unrealengine.com/en-US/eula/unreal
- 
+
 License Usage
- 
+
 Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
@@ -17,28 +17,17 @@ Copyright (c) 2026 Audiokinetic Inc.
 
 #pragma once
 
-#ifdef AK_WINDOWSGC
+#include "Wwise/WwiseUnitTests.h"
 
-#include "Platforms/AkPlatformBase.h"
-#include "AkWinGDKInitializationSettings.h"
+#if WWISE_UNIT_TESTS
 
-#define TCHAR_TO_AK(Text) (const WIDECHAR*)(Text)
+#include "Wwise/AdapterTypes/WwiseWrapperTypes.h"
+#include "Wwise/WwiseDataStructure.h"
 
-using UAkInitializationSettings = UAkWinGDKInitializationSettings;
-
-struct FAkWinGCPlatform : FAkPlatformBase
+namespace WwiseProjectDatabaseTestFixture
 {
-	static const UAkInitializationSettings* GetInitializationSettings()
-	{
-		return GetDefault<UAkWinGDKInitializationSettings>();
-	}
+	// Parses RootFileJson and builds a real WwisePlatformDataStructure from it. Returns nullptr if the JSON fails to parse or load.
+	WWISEPROJECTDATABASE_API TSharedPtr<WwisePlatformDataStructure> BuildTestPlatformDataStructure(const WwiseDBString& RootFileJson);
+}
 
-	static const FString GetPlatformBasePath()
-	{
-		return FString("Windows");
-	}
-};
-
-using FAkPlatform = FAkWinGCPlatform;
-
-#endif
+#endif // WWISE_UNIT_TESTS

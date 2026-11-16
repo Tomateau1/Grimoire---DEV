@@ -1517,15 +1517,6 @@ private:
 	
 	AKRESULT GetGameObjectID(AActor * in_pActor, AkGameObjectID& io_GameObject );
 
-	template<typename FCreateCallbackPackage>
-	AkPlayingID PostEventWithCallbackPackageOnAkGameObject(
-		const AkUInt32 EventShortID,
-		UAkGameObject* GameObject,
-		const TArray<AkExternalSourceInfo>& ExternalSources,
-		FCreateCallbackPackage CreateCallbackPackage,
-		EAkAudioContext AudioContext
-	);
-
 	template<typename ChannelConfig>
 	AKRESULT SetMultiplePositions(
 		UAkComponent* in_pGameObjectAkComponent,

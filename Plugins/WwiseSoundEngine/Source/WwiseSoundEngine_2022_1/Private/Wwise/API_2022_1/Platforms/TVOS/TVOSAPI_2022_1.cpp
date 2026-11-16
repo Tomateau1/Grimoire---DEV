@@ -20,8 +20,8 @@ Copyright (c) 2026 Audiokinetic Inc.
 
 #if defined(PLATFORM_TVOS) && PLATFORM_TVOS
 
-#if !defined(__has_include) || __has_include("Generated/AkTVOSPlugins.h")
-#include "Generated/AkTVOSPlugins.h"
+#if !defined(__has_include) || __has_include("Generated/AktvOSPlugins.h")
+#include "Generated/AktvOSPlugins.h"
 #endif
 
 void FWwisePlatformAPI_2022_1_TVOS::ChangeAudioSessionProperties(

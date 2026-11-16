@@ -270,9 +270,9 @@ public:
 	/// Destructor
 	~AkArray()
 	{
-		AKASSERT( m_pItems == 0 );
-		AKASSERT( m_uLength == 0 );
-		AKASSERT( m_ulReserved == 0 );
+		AKASSERTD( m_pItems == 0 );
+		AKASSERTD( m_uLength == 0 );
+		AKASSERTD( m_ulReserved == 0 );
 	}
 
 // Workaround for SWIG to parse nested structure: 
@@ -286,7 +286,7 @@ public:
 		/// + operator
 		Iterator operator+(AkUInt32 inc) const
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			Iterator returnedIt;
 			returnedIt.pItem = pItem + inc;
 			return returnedIt;
@@ -295,14 +295,14 @@ public:
         /// - operator
         AkUInt32 operator-(Iterator const& rhs) const
         {
-			AKASSERT((pItem && rhs.pItem)||(!pItem && !rhs.pItem));
+			AKASSERTD((pItem && rhs.pItem)||(!pItem && !rhs.pItem));
 			return (AkUInt32)(pItem - rhs.pItem);
         }
 
 		/// ++ operator
 		Iterator& operator++()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			++pItem;
 			return *this;
 		}
@@ -310,7 +310,7 @@ public:
 		/// -- operator
         Iterator& operator--()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			--pItem;
 			return *this;
 		}
@@ -318,13 +318,13 @@ public:
 		/// * operator
 		T& operator*()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			return *pItem;
 		}
 
 		T* operator->() const
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			return pItem;
 		}
 
@@ -404,7 +404,7 @@ public:
 	/// Erase the specified iterator from the array
 	Iterator Erase( Iterator& in_rIter )
 	{
-		AKASSERT( m_pItems != 0 );
+		AKASSERTD( m_pItems != 0 );
 
 		if (TMovePolicy::IsTrivial())
 		{
@@ -444,7 +444,7 @@ public:
 	/// Erase the item at the specified index
     void Erase( unsigned int in_uIndex )
 	{
-		AKASSERT( m_pItems != 0 );
+		AKASSERTD( m_pItems != 0 );
 
 		if (TMovePolicy::IsTrivial())
 		{
@@ -482,7 +482,7 @@ public:
 	/// This version should be used only when the order in the array is not an issue.
 	Iterator EraseSwap( Iterator& in_rIter )
 	{
-		AKASSERT( m_pItems != 0 && Length() > 0 );
+		AKASSERTD( m_pItems != 0 && Length() > 0 );
 
 		if (in_rIter.pItem < (m_pItems + m_uLength - 1))
 		{
@@ -491,7 +491,7 @@ public:
 		}
 
 		// Destroy.
-		AKASSERT( Length( ) > 0 );
+		AKASSERTD( Length( ) > 0 );
 		Last( ).~T();
 
 		m_uLength--;
@@ -535,7 +535,7 @@ public:
 
 		if (m_ulReserved && !IsGrowingAllowed())
 		{
-			AKASSERT(!"AkArray calling Reserve() with AkGrowByPolicy_NoGrow is only allowed when reserved size is zero");
+			AKASSERTD(!"AkArray calling Reserve() with AkGrowByPolicy_NoGrow is only allowed when reserved size is zero");
 			return AK_InvalidParameter;
 		}
 
@@ -631,7 +631,7 @@ public:
 	/// Returns a reference to the last item in the array.
 	T& Last()
 	{
-		AKASSERT( m_uLength );
+		AKASSERTD( m_uLength );
 
 		return *( m_pItems + m_uLength - 1 );
 	}
@@ -639,7 +639,7 @@ public:
 	/// Removes the last item from the array.
     void RemoveLast()
     {
-        AKASSERT( m_uLength );
+        AKASSERTD( m_uLength );
         ( m_pItems + m_uLength - 1 )->~T();
         m_uLength--;
     }
@@ -682,8 +682,8 @@ public:
 	/// Operator [], return a reference to the specified index.
 	AkForceInline T& operator[](unsigned int uiIndex) const
     {
-        AKASSERT( m_pItems );
-        AKASSERT( uiIndex < Length() );
+        AKASSERTD( m_pItems );
+        AKASSERTD( uiIndex < Length() );
         return m_pItems[uiIndex];
     }
 
@@ -692,7 +692,7 @@ public:
 	/// Failure: returns end iterator.
 	Iterator Insert(Iterator& in_rIter)
 	{
-		AKASSERT(!in_rIter.pItem || m_pItems);
+		AKASSERTD(!in_rIter.pItem || m_pItems);
 
 		AkUInt32 index = (in_rIter.pItem && m_pItems) ? (AkUInt32)(in_rIter.pItem - m_pItems) : 0;
 		if (index <= Length())
@@ -712,7 +712,7 @@ public:
 	/// Returns the pointer to the item to be filled.
 	T * Insert(unsigned int in_uIndex)
 	{
-        AKASSERT( in_uIndex <= Length() );
+        AKASSERTD( in_uIndex <= Length() );
 
 		size_t cItems = Length();
 
@@ -780,7 +780,7 @@ public:
 	/// Resize the array.
 	bool GrowArray( AkUInt32 in_uGrowBy )
 	{
-		AKASSERT( in_uGrowBy );
+		AKASSERTD( in_uGrowBy );
 
 		AkUInt32 ulNewReserve = m_ulReserved + in_uGrowBy;
 		T * pNewItems = NULL;

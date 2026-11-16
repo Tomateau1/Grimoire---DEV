@@ -477,7 +477,8 @@ AkPlayingID UAkAudioEvent::PostOnGameObject(UAkGameObject* GameObject, const FOn
 
 	GameObject->UpdateObstructionAndOcclusion();
 	const auto GameObjectID = GameObject->GetAkGameObjectID();
-	const AkPlayingID PlayingID = PostOnGameObjectID(GameObjectID, Delegate, Callback, Cookie, CallbackMask, LatentAction, AudioContext);
+	UAkComponent* AkComponent = Cast<UAkComponent>(GameObject);
+	const AkPlayingID PlayingID = PostOnGameObjectID(GameObjectID, Delegate, Callback, Cookie, CallbackMask, LatentAction, AudioContext, AkComponent);
 	if (PlayingID != AK_INVALID_PLAYING_ID)
 	{
 		GameObject->EventPosted();
@@ -487,7 +488,7 @@ AkPlayingID UAkAudioEvent::PostOnGameObject(UAkGameObject* GameObject, const FOn
 
 AkPlayingID UAkAudioEvent::PostOnGameObjectID(const AkGameObjectID GameObjectID, const FOnAkPostEventCallback* Delegate,
 	const AkCallbackFunc Callback, void* Cookie, const AkCallbackType CallbackMask, FWaitEndOfEventAction* LatentAction,
-	const EAkAudioContext AudioContext)
+	const EAkAudioContext AudioContext, UAkComponent* AkComponent)
 {
 	SCOPED_AKAUDIO_EVENT(TEXT("UAkAudioEvent::PostOnGameObjectID"));
 	if (Delegate)
@@ -497,11 +498,11 @@ AkPlayingID UAkAudioEvent::PostOnGameObjectID(const AkGameObjectID GameObjectID,
 		UE_CLOG(UNLIKELY(Cookie), LogAkAudio, Error, TEXT("Blueprint Delegate ignores Cookie for AkAudioEvent('%s').Post(GameObjectID=%" PRIu64 ")."), *GetName(), GameObjectID);
 
 		const auto Result = PostEvent(GameObjectID,
-			[this, Delegate, CallbackMask](AkGameObjectID GameObjectID)
+			[this, Delegate, CallbackMask, AkComponent](AkGameObjectID GameObjectID)
 			{
 				auto* AudioDevice = FAkAudioDevice::Get();
 				auto* CallbackManager = AudioDevice->GetCallbackManager();
-				return CallbackManager->CreateCallbackPackage(*Delegate, CallbackMask, GameObjectID, true, GetShortID());
+				return CallbackManager->CreateCallbackPackage(*Delegate, CallbackMask, GameObjectID, true, GetShortID(), AkComponent);
 			},
 			AudioContext);
 		return Result;

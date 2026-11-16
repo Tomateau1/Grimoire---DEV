@@ -72,10 +72,10 @@ typedef AkUInt16 AkTriIdx;            ///< Index of triangle in SA geometry
 typedef AkUInt16 AkSurfIdx;           ///< Index of surface in SA geometry
 
 // Volume vector. Access each element with the standard bracket [] operator.
-typedef AkReal32* AkSpeakerVolumesMatrixPtr;
+typedef AkReal32* AkSpeakerVolumesVectorPtr;
 
 // Volume matrix. Access each input channel vector with AK::SpeakerVolumes::Matrix::GetChannel().
-typedef AkReal32* AkSpeakerVolumesVectorPtr;
+typedef AkReal32* AkSpeakerVolumesMatrixPtr;
 
 ///< Constant volume vector. Access each element with the standard bracket [] operator.
 typedef const AkReal32 * AkSpeakerVolumesConstVectorPtr;
@@ -92,8 +92,8 @@ namespace AK
 /// Multi-channel volume definitions and services.
 namespace SpeakerVolumes
 {
-	using VectorPtr = AkSpeakerVolumesMatrixPtr;
-	using MatrixPtr = AkSpeakerVolumesVectorPtr;
+	using VectorPtr = AkSpeakerVolumesVectorPtr;
+	using MatrixPtr = AkSpeakerVolumesMatrixPtr;
 	using ConstVectorPtr = AkSpeakerVolumesConstVectorPtr;
 	using ConstMatrixPtr = AkSpeakerVolumesConstMatrixPtr;
 }

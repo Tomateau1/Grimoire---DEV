@@ -172,7 +172,7 @@ public:
 		/// Operator ++.
 		inline Iterator& operator++()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			pItem = U_NEXTITEM<T>::Get( pItem );
 			return *this;
 		}
@@ -180,14 +180,14 @@ public:
 		/// Operator *.
 		inline T * operator*() const
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			return pItem;
 		}
 
 		/// Operator ->
 		inline T * operator->() const
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return pItem;
 		}
 
@@ -213,7 +213,7 @@ public:
 		/// Operator ++.
 		IteratorEx& operator++()
 		{
-			AKASSERT( this->pItem );
+			AKASSERTD( this->pItem );
 			
 			pPrevItem = this->pItem;
 			this->pItem = U_NEXTITEM<T>::Get( this->pItem );

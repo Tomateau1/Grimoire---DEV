@@ -20,6 +20,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 #include "Platforms/AkUEPlatform.h"
 #include "HAL/PlatformMemory.h"
 #include "Misc/App.h"
+#include "Misc/StringBuilder.h"
 #include "ProfilingDebugging/CpuProfilerTrace.h"
 #include "ProfilingDebugging/MiscTrace.h"
 
@@ -102,24 +103,27 @@ namespace AkInitializationSettings_Helpers
 		}
 	}
 #endif
+	static constexpr ANSICHAR ProfilerTimerNamePrefix[] = "WwiseSoundEngine ";
+	static constexpr int32 MaxProfilerTimerNameLength = 128;
+	static constexpr int32 MaxProfilerTimerZoneLength = MaxProfilerTimerNameLength - UE_ARRAY_COUNT(ProfilerTimerNamePrefix);
+
 	void AkProfilerPushTimer(AkPluginID in_uPluginID, const char* in_pszZoneName)
 	{
-		if (!in_pszZoneName)
+		TAnsiStringBuilder<MaxProfilerTimerNameLength> Name;
+		Name << ProfilerTimerNamePrefix;
+		if (in_pszZoneName)
 		{
-			in_pszZoneName = "(Unknown)";
+			Name.Append(in_pszZoneName, FPlatformString::Strnlen(in_pszZoneName, MaxProfilerTimerZoneLength));
 		}
-
-		auto Name = FString(in_pszZoneName);
-		Name = FString(TEXT("WwiseSoundEngine ")) + Name;
+		else
+		{
+			Name.Appendf("(Unknown 0x%08X)", in_uPluginID);
+		}
 
 #if CPUPROFILERTRACE_ENABLED
 		FCpuProfilerTrace::OutputBeginDynamicEvent(*Name);
 #endif
-#if PLATFORM_IMPLEMENTS_BeginNamedEventStatic
-		FPlatformMisc::BeginNamedEventStatic(WwiseNamedEvents::Color1, *Name);
-#else
 		FPlatformMisc::BeginNamedEvent(WwiseNamedEvents::Color1, *Name);
-#endif
 	}
 
 	void AkProfilerPopTimer()

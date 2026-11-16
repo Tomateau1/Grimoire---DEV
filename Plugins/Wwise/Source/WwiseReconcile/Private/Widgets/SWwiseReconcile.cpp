@@ -44,9 +44,10 @@ void SWwiseReconcile::Construct(const FArguments& InArgs, const TArray< FWwiseRe
 	for(auto& Item : InReconcileItems)
 	{
 		TSharedPtr<FWwiseReconcileItem> ReconcileItem = MakeShared<FWwiseReconcileItem>(Item);
+		ReconcileItem->CheckForAssetReference();
 		ReconcileItems.Add(ReconcileItem);
 
-		if (bOnlyReferencedAssets && !ReconcileItem->IsAssetReferenced())
+		if (bOnlyReferencedAssets && !ReconcileItem->bIsAssetReferenced)
 		{
 			bOnlyReferencedAssets = false;
 		}

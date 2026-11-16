@@ -32,6 +32,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 #include "AkAudioDeviceShareSet.h"
 #include "AkGameplayTypes.generated.h"
 
+class UAkComponent;
 
 UENUM(BlueprintType)
 enum class EAkAudioContext : uint8
@@ -467,7 +468,7 @@ struct AkCombinedCallbackInfo
 class AKAUDIO_API AkCallbackTypeHelpers
 {
 public:
-	static UAkCallbackInfo* GetBlueprintableCallbackInfo(EAkCallbackType CallbackType, AkCombinedCallbackInfo* CallbackInfo);
+	static UAkCallbackInfo* GetBlueprintableCallbackInfo(EAkCallbackType CallbackType, AkCombinedCallbackInfo* CallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 #if WWISE_2025_1_OR_LATER
 	static AkCombinedCallbackInfo* CopyWwiseCallbackInfo(AkCallbackType CallbackType, AkEventCallbackInfo* EventCallbackInfo, void* SourceCallbackInfo);
 #else
@@ -488,7 +489,7 @@ class AKAUDIO_API UAkCallbackInfo : public UObject
 public:
 	UAkCallbackInfo( class FObjectInitializer const & ObjectInitializer);
 
-	static UAkCallbackInfo* Create(AkGameObjectID GameObjectID);
+	static UAkCallbackInfo* Create(AkGameObjectID GameObjectID, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo")
 	TObjectPtr<class UAkComponent> AkComponent = nullptr;
@@ -534,7 +535,7 @@ class AKAUDIO_API UAkEventCallbackInfo : public UAkCallbackInfo
 public:
 	UAkEventCallbackInfo(class FObjectInitializer const & ObjectInitializer);
 
-	static UAkEventCallbackInfo* Create(AkEventCallbackInfo* AkEventCallbackInfo);
+	static UAkEventCallbackInfo* Create(AkEventCallbackInfo* AkEventCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo|AkEvent")
 	int32 PlayingID = 0;		///< Playing ID of Event, returned by PostEvent()
@@ -555,7 +556,7 @@ class AKAUDIO_API UAkDynamicSequenceItemCallbackInfo : public UAkCallbackInfo
 public:
 	UAkDynamicSequenceItemCallbackInfo(class FObjectInitializer const & ObjectInitializer);
 
-	static UAkDynamicSequenceItemCallbackInfo* Create(AkCombinedCallbackInfo * akCallbackInfo);
+	static UAkDynamicSequenceItemCallbackInfo* Create(AkCombinedCallbackInfo * akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo|AkDynamicSequenceItem")
 	int32 PlayingID = 0;				///< Playing ID of Dynamic Sequence, returned by AK::SoundEngine:DynamicSequence::Open()
@@ -857,7 +858,7 @@ class AKAUDIO_API UAkMIDIEventCallbackInfo : public UAkEventCallbackInfo
 	
 public:
 	UAkMIDIEventCallbackInfo(class FObjectInitializer const & ObjectInitializer);
-	static UAkMIDIEventCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo);
+	static UAkMIDIEventCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|AkCallbackInfo|MIDI")
 	EAkMidiEventType GetType();
@@ -904,7 +905,7 @@ class AKAUDIO_API UAkMarkerCallbackInfo : public UAkEventCallbackInfo
 	GENERATED_BODY()
 public:
 	UAkMarkerCallbackInfo(class FObjectInitializer const & ObjectInitializer);
-	static UAkMarkerCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo);
+	static UAkMarkerCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo|Marker")
 	int32 Identifier = 0;		///< Cue point identifier
@@ -926,7 +927,7 @@ class AKAUDIO_API UAkDurationCallbackInfo : public UAkEventCallbackInfo
 	GENERATED_BODY()
 public:
 	UAkDurationCallbackInfo(class FObjectInitializer const & ObjectInitializer);
-	static UAkDurationCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo);
+	static UAkDurationCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo|Duration")
 	float Duration = 0.f;				///< Duration of the sound (unit: milliseconds)
@@ -998,7 +999,7 @@ class AKAUDIO_API UAkMusicSyncCallbackInfo : public UAkCallbackInfo
 
 public:
 	UAkMusicSyncCallbackInfo(class FObjectInitializer const & ObjectInitializer);
-	static UAkMusicSyncCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo);
+	static UAkMusicSyncCallbackInfo* Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audiokinetic|AkCallbackInfo|Music")
 	int32 PlayingID = 0;		///< Playing ID of Event, returned by PostEvent()

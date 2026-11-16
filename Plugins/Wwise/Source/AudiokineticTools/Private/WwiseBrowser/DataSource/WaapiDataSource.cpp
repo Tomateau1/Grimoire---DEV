@@ -1407,6 +1407,11 @@ void FWaapiDataSource::RefreshConnectionStatus()
 #if AK_SUPPORT_WAAPI
 	if(FAkWaapiClient::IsProjectLoaded())
 	{
+		if (!FAkWaapiClient::IsProjectAvailable())
+		{
+			CachedConnectionStatus = EWwiseConnectionStatus::OpenedModalWindow;
+			return;
+		}
 		if(auto AkWaapiClient = FAkWaapiClient::Get())
 		{
 			FString WaapiPath;

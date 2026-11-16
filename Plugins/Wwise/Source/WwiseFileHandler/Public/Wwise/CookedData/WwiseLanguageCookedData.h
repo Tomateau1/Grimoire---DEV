@@ -44,7 +44,7 @@ struct WWISEFILEHANDLER_API FWwiseLanguageCookedData
 	 * @brief Language name as set in Wwise
 	*/
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Wwise")
-	FName LanguageName;
+	FName LanguageName = {};
 
 	/**
 	 * @brief Is this language the default in Wwise

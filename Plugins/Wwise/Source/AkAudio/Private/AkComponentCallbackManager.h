@@ -18,6 +18,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 #pragma once
 
 #include "AkAudioDevice.h"
+#include "AkComponent.h"
 #include "WwiseUnrealDefines.h"
 
 class IAkUserEventCallbackPackage
@@ -85,9 +86,10 @@ private:
 class FAkBlueprintDelegateEventCallbackPackage : public IAkUserEventCallbackPackage
 {
 public:
-	FAkBlueprintDelegateEventCallbackPackage(FOnAkPostEventCallback PostEventCallback, uint32 Flags, uint32 in_Hash, bool in_HasExternalSources, uint32 in_EventId)
+	FAkBlueprintDelegateEventCallbackPackage(FOnAkPostEventCallback PostEventCallback, uint32 Flags, uint32 in_Hash, bool in_HasExternalSources, uint32 in_EventId, UAkComponent* AkComponent)
 		: IAkUserEventCallbackPackage(Flags, in_Hash, in_HasExternalSources, in_EventId)
 		, BlueprintCallback(PostEventCallback)
+		, WeakPtrAkComponent(AkComponent)
 	{}
 
 #if WWISE_2025_1_OR_LATER
@@ -99,6 +101,7 @@ public:
 
 private:
 	FOnAkPostEventCallback BlueprintCallback;
+	TWeakObjectPtr<UAkComponent> WeakPtrAkComponent;
 };
 
 class FAkLatentActionEventCallbackPackage : public IAkUserEventCallbackPackage
@@ -155,7 +158,7 @@ public:
 	~FAkComponentCallbackManager();
 
 	IAkUserEventCallbackPackage* CreateCallbackPackage(AkCallbackFunc in_cbFunc, void* in_Cookie, uint32 in_Flags, AkGameObjectID in_gameObjID, bool HasExternalSources, uint32 in_EventId);
-	IAkUserEventCallbackPackage* CreateCallbackPackage(FOnAkPostEventCallback BlueprintCallback, uint32 in_Flags, AkGameObjectID in_gameObjID, bool HasExternalSources, uint32 in_EventId);
+	IAkUserEventCallbackPackage* CreateCallbackPackage(FOnAkPostEventCallback BlueprintCallback, uint32 in_Flags, AkGameObjectID in_gameObjID, bool HasExternalSources, uint32 in_EventId, UAkComponent* AkComponent);
 	IAkUserEventCallbackPackage* CreateCallbackPackage(FWaitEndOfEventAction* LatentAction, AkGameObjectID in_gameObjID, bool HasExternalSources, uint32 in_EventId);
 	void RemoveCallbackPackage(IAkUserEventCallbackPackage* in_Package, AkGameObjectID in_gameObjID);
 

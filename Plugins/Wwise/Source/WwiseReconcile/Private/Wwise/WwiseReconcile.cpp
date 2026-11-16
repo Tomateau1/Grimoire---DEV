@@ -161,7 +161,7 @@ bool IWwiseReconcile::ReconcileAssets(EWwiseReconcileOperationFlags OperationFla
 }
 #undef LOCTEXT
 
-bool FWwiseReconcileItem::IsAssetReferenced() const
+bool FWwiseReconcileItem::CheckForAssetReference()
 {
 	// Check if the object is referenced in memory
 	if (EnumHasAllFlags(OperationRequired, EWwiseReconcileOperationFlags::Delete))
@@ -172,14 +172,17 @@ bool FWwiseReconcileItem::IsAssetReferenced() const
 
 		if (bReferenced || bReferencedByUndo)
 		{
-			return true;
+			bIsAssetReferenced = true;
+			return bIsAssetReferenced;
 		}
 		// If not, then check if referenced on disk
 		IAssetRegistry& AssetRegistry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")).Get();
 		TArray<FName> referencers;
 		AssetRegistry.GetReferencers(FName(Asset.PackageName), referencers);
 
-		return referencers.Num() > 0;
+		bIsAssetReferenced = referencers.Num() > 0;
+		return bIsAssetReferenced;
 	}
-	return false;
+	bIsAssetReferenced = false;
+	return bIsAssetReferenced;
 }

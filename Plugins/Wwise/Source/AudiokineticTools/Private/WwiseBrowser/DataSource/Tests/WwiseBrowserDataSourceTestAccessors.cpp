@@ -15,21 +15,27 @@ in a written agreement between you and Audiokinetic Inc.
 Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
-using UnrealBuildTool;
-using System;
-using System.IO;
-using System.Collections.Generic;
+#include "WwiseBrowserDataSourceTestAccessors.h"
 
-public class WwiseUEPlatform_2024_1_WinGDK : WwiseUEPlatform_WinGDK
+#if WWISE_UNIT_TESTS
+
+#include "WwiseBrowser/DataSource/UAssetDataSource.h"
+
+FWwiseBrowserDataSource::FWwiseBrowserDataSource(EForTesting)
 {
-	public WwiseUEPlatform_2024_1_WinGDK(ReadOnlyTargetRules in_TargetRules, string in_ThirdPartyFolder) : base(in_TargetRules, in_ThirdPartyFolder) {}
-
-	protected override Version FirstSoundEngineVersionWithoutWinGC { get { return new Version(2024, 1, 10, 0); } }
+	WaapiDataSource = MakeUnique<FWaapiDataSource>();
+	ProjectDBDataSource = MakeUnique<FWwiseProjectDatabaseDataSource>();
+	UAssetDataSource = MakeUnique<FUAssetDataSource>();
 }
 
-public class WwiseUEPlatform_2024_1_WinAnvil : WwiseUEPlatform_2024_1_WinGDK
+void FWwiseBrowserDataSource::CancelCurrentRebuild()
 {
-	public WwiseUEPlatform_2024_1_WinAnvil(ReadOnlyTargetRules in_TargetRules, string in_ThirdPartyFolder) : base(in_TargetRules, in_ThirdPartyFolder) {}
-	
-	protected override Version FirstSoundEngineVersionWithoutWinGC { get { return new Version(2024, 1, 10, 0); } }
+	RebuildCoordinator.CancelCurrentRebuild();
 }
+
+uint32 FWwiseBrowserDataSource::GetCurrentGeneration() const
+{
+	return RebuildCoordinator.CurrentGeneration();
+}
+
+#endif // WWISE_UNIT_TESTS

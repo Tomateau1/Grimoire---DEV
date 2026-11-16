@@ -5,9 +5,9 @@ The content of this file may not be used without valid licenses to the
 AUDIOKINETIC Wwise Technology.
 Note that the use of the game engine is subject to the Unreal(R) Engine End User
 License Agreement at https://www.unrealengine.com/en-US/eula/unreal
- 
+
 License Usage
- 
+
 Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
@@ -26,13 +26,19 @@ UCLASS(BlueprintType, DisplayName="Keep Multiple Reference Assets Only", Meta = 
 class WWISEPACKAGINGEDITOR_API UWwiseAssetLibraryFilterMultiReference : public UWwiseAssetLibraryFilter
 {
 	GENERATED_BODY()
-	
+
 public:
 	UWwiseAssetLibraryFilterMultiReference() {}
-	
-	virtual bool IsAssetAvailable(
-		const FWwiseAssetLibraryFilteringSharedData& Shared,
-		const WwiseAnyRef& Asset) const override;
+
+	virtual bool IsAssetAvailable(const FWwiseAssetLibraryFilteringSharedData& Shared, const WwiseAnyRef& Asset) const override;
+	virtual void PreFilter(const FWwiseAssetLibraryFilteringSharedData& Shared, const FWwiseAssetLibraryInfo& AssetLibraryInfo) override;
+	virtual void PostFilter(const FWwiseAssetLibraryFilteringSharedData& Shared, const FWwiseAssetLibraryInfo& AssetLibraryInfo) override;
+
+private:
+	TSet<int32> MultiReferencedMediaIds;
+	TSet<int32> MultiReferencedSoundBankIds;
+
+	static constexpr int32 MultiRefFilterCancellationCheckInterval = 100;
 };
 
 class WWISEPACKAGINGEDITOR_API FAssetTypeActions_WwiseAssetLibraryFilterMultiReference : public FAssetTypeActions_Base_WwiseAssetLibraryFilter

@@ -315,8 +315,6 @@ public:
 		}
 	}
 
-	static UAkComponent* GetAkComponent(AkGameObjectID GameObjectID);
-
 	AkRoomID GetSpatialAudioRoomID() const;
 	const TWeakObjectPtr<UAkRoomComponent> GetSpatialAudioRoom() const { return CurrentRoom; }
 

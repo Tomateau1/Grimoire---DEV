@@ -1,52 +1,16 @@
 {
-    "originalSdkFolder": "C:\\Wwise\\Wwise_2025.1.9.9197\\SDK",
+    "originalSdkFolder": "C:\\Audiokinetic\\Wwise2025.1.12.9287\\SDK",
     "currentVersion": {
         "nickname": "",
-        "build": 4396,
+        "build": 4547,
         "major": 1,
-        "minor": 9,
+        "minor": 12,
         "year": 2025
     },
     "installedBundleGroups": [
         {
             "id": "Packages",
             "valueId": "Unreal"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealSwitch"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealSwitch2"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealStadia"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealPS4"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealPS5"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealXboxSeriesX"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealXboxOne"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealXboxOneGC"
-        },
-        {
-            "id": "Packages",
-            "valueId": "UnrealWinGC"
         },
         {
             "id": "DeploymentPlatforms",

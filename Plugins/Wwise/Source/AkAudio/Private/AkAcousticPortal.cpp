@@ -530,11 +530,8 @@ void UAkPortalComponent::SetAdjacentRoomBleed(float InAdjacentRoomBleed)
 void UAkPortalComponent::ResetPortalState()
 {
 	SCOPED_AKAUDIO_EVENT(TEXT("UAkPortalComponent::ResetPortalState"));
-	if (PortalState != InitialState)
-	{
-		PortalState = InitialState;
-		bPortalNeedsUpdate = true;
-	}
+	PortalState = InitialState;
+	bPortalNeedsUpdate = true;
 }
 
 void UAkPortalComponent::ResetPortalOcclusion()

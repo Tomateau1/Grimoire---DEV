@@ -2281,6 +2281,23 @@ void FWwiseResourceLoaderImpl::UnloadAudioNodeResources(FWwiseResourceUnloadProm
 	const auto& CookedData = UsageCount->Condition;
 	if (LoadedData.IsProcessing)
 	{
+		// If this audio node keeps rescheduling for longer than the threshold, a deferred
+		// resource unload is likely not completing (e.g. media stuck AK_ResourceInUse because
+		// RenderAudio is not ticking).
+		{
+			const double NowSeconds = FPlatformTime::Seconds();
+			if (LoadedData.UnloadRescheduleStartSeconds == 0.0)
+			{
+				LoadedData.UnloadRescheduleStartSeconds = NowSeconds;
+				LoadedData.bUnloadStallReported = false;
+			}
+			else if (!LoadedData.bUnloadStallReported && NowSeconds - LoadedData.UnloadRescheduleStartSeconds > 5.0)
+			{
+				LoadedData.bUnloadStallReported = true;
+				UE_LOG(LogWwiseResourceLoader, Error, TEXT("FWwiseResourceLoaderImpl::UnloadAudioNodeResources UsageCount[%p]: %s has been rescheduling its unload for %.1f s while still processing. A deferred unload is likely stalled."),
+					&UsageCount.Get(), *CookedData.GetDebugString(), NowSeconds - LoadedData.UnloadRescheduleStartSeconds);
+			}
+		}
 		ExecutionQueue->Async(WWISERESOURCELOADER_ASYNC_NAME("FWwiseResourceLoaderImpl::UnloadAudioNodeResources IsProcessing"), [WeakThis=AsWeak(), Promise = MoveTemp(Promise), UsageCount]() mutable
 		{
 		auto SharedResourceLoader = StaticCastSharedPtr<FWwiseResourceLoaderImpl>(WeakThis.Pin());
@@ -2294,6 +2311,10 @@ void FWwiseResourceLoaderImpl::UnloadAudioNodeResources(FWwiseResourceUnloadProm
 		});
 		return;
 	}
+
+	// Not rescheduling: the unload is proceeding, so clear any stall-tracking state.
+	LoadedData.UnloadRescheduleStartSeconds = 0.0;
+	LoadedData.bUnloadStallReported = false;
 
 	if (UNLIKELY(UsageCount->HaveAllKeys()))
 	{

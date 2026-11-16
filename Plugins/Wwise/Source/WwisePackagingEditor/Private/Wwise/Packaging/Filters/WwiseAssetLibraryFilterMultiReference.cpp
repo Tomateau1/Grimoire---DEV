@@ -22,32 +22,54 @@ Copyright (c) 2026 Audiokinetic Inc.
 bool UWwiseAssetLibraryFilterMultiReference::IsAssetAvailable(const FWwiseAssetLibraryFilteringSharedData& Shared,
 		const WwiseAnyRef& Asset) const
 {
-	int Id;
 	const WwiseRefType AssetType = Asset.GetType();
-	bool bIsMedia = false;
-	if(AssetType == WwiseRefType::Media)
-	{
-		Id = Asset.GetMedia()->Id;
-		bIsMedia = true;
-	}
-	else if(AssetType == WwiseRefType::SoundBank)
-	{
-		Id = Asset.GetSoundBank()->Id;
-	}
-	else
-	{
-		return false;
-	}
+
 	if (Shared.Db.GetUsageCount(Asset) == 1)
 	{
 		return false;
 	}
-	int count = 0;
-	for (auto& UnrealAsset : Shared.AssetsData)
+
+	if (AssetType == WwiseRefType::Media)
 	{
+		if (const auto* Media = Asset.GetMedia())
+		{
+			return MultiReferencedMediaIds.Contains(Media->Id);
+		}
+	}
+	else if (AssetType == WwiseRefType::SoundBank)
+	{
+		if (const auto* Soundbank = Asset.GetSoundBank())
+		{
+			return MultiReferencedSoundBankIds.Contains(Soundbank->Id);
+		}
+	}
+
+	return false;
+}
+
+void UWwiseAssetLibraryFilterMultiReference::PreFilter(const FWwiseAssetLibraryFilteringSharedData& Shared,
+	const FWwiseAssetLibraryInfo& AssetLibraryInfo)
+{
+	MultiReferencedMediaIds.Empty();
+	MultiReferencedSoundBankIds.Empty();
+
+	TMap<int32, int32> MediaReferenceCount;
+	TMap<int32, int32> SoundBankReferenceCount;
+
+	int32 ProcessedCount = 0;
+	for (const auto& UnrealAsset : Shared.AssetsData)
+	{
+		if (++ProcessedCount % MultiRefFilterCancellationCheckInterval == 0 && Shared.IsCancelled())
+		{
+			MultiReferencedMediaIds.Empty();
+			MultiReferencedSoundBankIds.Empty();
+			return;
+		}
+
 		auto GuidValue = UnrealAsset.TagsAndValues.FindTag(GET_MEMBER_NAME_CHECKED(FWwiseObjectInfo, WwiseGuid));
 		auto ShortIdValue = UnrealAsset.TagsAndValues.FindTag(GET_MEMBER_NAME_CHECKED(FWwiseObjectInfo, WwiseShortId));
 		auto NameValue = UnrealAsset.TagsAndValues.FindTag(GET_MEMBER_NAME_CHECKED(FWwiseGroupValueInfo, WwiseName));
+
 		if (UnrealAsset.AssetClassPath.GetAssetName().ToString().Contains("AkAudioEvent"))
 		{
 			FWwiseEventInfo EventInfo;
@@ -58,29 +80,21 @@ bool UWwiseAssetLibraryFilterMultiReference::IsAssetAvailable(const FWwiseAssetL
 
 			for (auto& Event : Events)
 			{
-				if (bIsMedia)
+				auto Medias = Event.GetAllMedia(Shared.Db.GetMediaFiles());
+				for (auto& Media : Medias)
 				{
-					auto Medias = Event.GetAllMedia(Shared.Db.GetMediaFiles());
-					for (auto& Media : Medias)
-					{
-						if (Media.Key == Id)
-						{
-							count++;
-						}
-					}
+					int32 MediaId = Media.Key;
+					MediaReferenceCount.FindOrAdd(MediaId, 0)++;
 				}
-				else
+
+				if (auto SoundBank = Event.GetSoundBank())
 				{
-					if (auto SoundBank = Event.GetSoundBank())
-					{
-						if (SoundBank->Id == Id)
-						{
-							count++;
-						}
-					}
+					int32 SoundBankId = SoundBank->Id;
+					SoundBankReferenceCount.FindOrAdd(SoundBankId, 0)++;
 				}
 			}
 		}
+
 		if (UnrealAsset.AssetClassPath.GetAssetName().ToString().Contains("AkAuxBus"))
 		{
 			FWwiseObjectInfo ObjectInfo;
@@ -88,35 +102,51 @@ bool UWwiseAssetLibraryFilterMultiReference::IsAssetAvailable(const FWwiseAssetL
 			ObjectInfo.WwiseShortId = FCString::Strtoui64(*ShortIdValue.GetValue(), NULL, 10);
 			ObjectInfo.WwiseName = NameValue.AsName();
 			auto Bus = Shared.Db.GetAuxBus(ObjectInfo);
-			if (bIsMedia)
+
+			auto Medias = Bus.GetSoundBankMedia(Shared.Db.GetMediaFiles());
+			for (auto& Media : Medias)
 			{
-				auto Medias = Bus.GetSoundBankMedia(Shared.Db.GetMediaFiles());
-				for (auto& Media : Medias)
-				{
-					if (Media.Key == Id)
-					{
-						count++;
-					}
-				}
+				int32 MediaId = Media.Key;
+				MediaReferenceCount.FindOrAdd(MediaId, 0)++;
 			}
-			else
+
+			if (auto SoundBank = Bus.GetSoundBank())
 			{
-				if (auto SoundBank = Bus.GetSoundBank())
-				{
-					if (SoundBank->Id == Id)
-					{
-						count++;
-					}
-				}
+				int32 SoundBankId = SoundBank->Id;
+				SoundBankReferenceCount.FindOrAdd(SoundBankId, 0)++;
 			}
-		}
-		
-		if(count > 1)
-		{
-			return true;
 		}
 	}
-	return false;
+
+	if (Shared.IsCancelled())
+	{
+		MultiReferencedMediaIds.Empty();
+		MultiReferencedSoundBankIds.Empty();
+		return;
+	}
+
+	for (const auto& Pair : MediaReferenceCount)
+	{
+		if (Pair.Value > 1)
+		{
+			MultiReferencedMediaIds.Add(Pair.Key);
+		}
+	}
+
+	for (const auto& Pair : SoundBankReferenceCount)
+	{
+		if (Pair.Value > 1)
+		{
+			MultiReferencedSoundBankIds.Add(Pair.Key);
+		}
+	}
+}
+
+void UWwiseAssetLibraryFilterMultiReference::PostFilter(const FWwiseAssetLibraryFilteringSharedData& Shared,
+	const FWwiseAssetLibraryInfo& AssetLibraryInfo)
+{
+	MultiReferencedMediaIds.Empty();
+	MultiReferencedSoundBankIds.Empty();
 }
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"

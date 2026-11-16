@@ -88,7 +88,7 @@ UAkDynamicSequence* UAkDynamicSequenceBlueprintFunctionLibrary::OpenDynamicSeque
 	CallbackMask |= AK_EndOfDynamicSequenceItem;
 
 	auto* CallbackManager = AudioDevice->GetCallbackManager();
-	auto CallbackPackage = CallbackManager->CreateCallbackPackage(DynamicSequenceCallback, CallbackMask, GameObjectId, false, AK_INVALID_UNIQUE_ID);
+	auto CallbackPackage = CallbackManager->CreateCallbackPackage(DynamicSequenceCallback, CallbackMask, GameObjectId, false, AK_INVALID_UNIQUE_ID, nullptr);
 	if (UNLIKELY(!CallbackPackage))
 	{
 		UE_LOG(LogAkAudio, Error, TEXT("UAkDynamicSequenceLibrary::OpenDynamicSequence %s Go %" PRIi64": Could not create Callback Package."), *GameObjectName, GameObjectId);

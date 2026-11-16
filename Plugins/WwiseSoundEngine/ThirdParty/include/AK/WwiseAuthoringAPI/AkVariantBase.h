@@ -168,7 +168,7 @@ namespace AK
 			{
 				Clear();
 				AkGuid* guid = new AkGuid();
-				memcpy(guid, &in_val, sizeof(AkGuid));
+				memcpy((void*)guid, &in_val, sizeof(AkGuid));
 				m_eType = AkVariantType_guid;
 				m_data = guid;
 				return *this;

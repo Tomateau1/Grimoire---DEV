@@ -18,6 +18,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 #pragma once
 
 #include "Wwise/WwiseProjectDatabase.h"
+#include <atomic>
 
 struct WWISEPACKAGINGEDITOR_API FWwiseAssetLibraryFilteringSharedData
 {
@@ -30,6 +31,27 @@ struct WWISEPACKAGINGEDITOR_API FWwiseAssetLibraryFilteringSharedData
 	 * All the database operations are done with the Database locked in read.
 	 */
 	WwiseDataStructureScopeLock Db;
+
+	/**
+	 * Cancellation token for aborting long-running filter operations.
+	 * When non-null, filters should periodically check if the token value has changed.
+	 */
+	const std::atomic<uint32>* CancellationToken{ nullptr };
+
+	/**
+	 * The expected value of the cancellation token when this operation started.
+	 * If CancellationToken->load() != ExpectedTokenValue, the operation should abort.
+	 */
+	uint32 ExpectedTokenValue{ 0 };
+
+	/**
+	 * Helper method to check if the current operation has been cancelled.
+	 * @return true if cancellation has been requested, false otherwise.
+	 */
+	bool IsCancelled() const
+	{
+		return CancellationToken && CancellationToken->load(std::memory_order_relaxed) != ExpectedTokenValue;
+	}
 
 	/**
 	 * Entire list of applicable sources.

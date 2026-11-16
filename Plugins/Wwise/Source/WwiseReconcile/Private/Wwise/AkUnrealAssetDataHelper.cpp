@@ -131,8 +131,13 @@ namespace AkUnrealAssetDataHelper
 			UE_LOG(LogWwiseReconcile, Error, TEXT("Could not fetch AkSettings"));
 			return {};
 		}
+		
+		FString DefaultPath = AkSettings->DefaultAssetCreationPath;
+		if (WwiseRef != nullptr)
+		{
+			 DefaultPath += FWwiseStringConverter::ToFString(WwiseRef->GetObjectPath());
+		}
 
-		FString DefaultPath = AkSettings->DefaultAssetCreationPath + FWwiseStringConverter::ToFString(WwiseRef->GetObjectPath());
 		DefaultPath.ReplaceCharInline('\\', '/');
 		int32 Index;
 		if(DefaultPath.FindLastChar('/', Index))

@@ -35,6 +35,9 @@ public:
 		return ModuleName;
 	}
 
+	/** Flag to signal async tasks that the module is shutting down */
+	static inline std::atomic<bool> bIsShuttingDown{false};
+
 	/**
 	 * Checks to see if this module is loaded and ready.
 	 *

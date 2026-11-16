@@ -50,6 +50,10 @@ struct WWISERESOURCELOADER_API FWwiseLoadedAudioNodeInfo
 		TArray<const FWwiseExternalSourceCookedData*> LoadedExternalSources;
 		TArray<const FWwiseMediaCookedData*> LoadedMedia;
 		std::atomic<int> IsProcessing{0};
+
+		double UnloadRescheduleStartSeconds{0.0};
+		bool bUnloadStallReported{false};
+
 		bool IsLoaded() const;
 	} LoadedData;
 

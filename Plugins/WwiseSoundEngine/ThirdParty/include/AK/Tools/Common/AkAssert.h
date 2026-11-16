@@ -66,17 +66,13 @@ the specific language governing permissions and limitations under the License.
 
 	#else //  defined( AK_ENABLE_ASSERTS )
 
-		#define AKASSERT(Condition) do { switch ( 0 ) { case 0: break; default: if ( !( Condition ) ) {} } } while ( 0 )
+		#define AKASSERT(Condition) ((void)sizeof(!!(Condition)))
 
 		#define AKVERIFY(x) ((void)(x))
 
 		#define AK_IS_ASSERT_HOOKED (false)
 
-		#ifdef _DEBUG
-			#define AKASSERTD AKASSERT
-		#else
-			#define AKASSERTD(Condition) ((void)0)
-		#endif
+		#define AKASSERTD AKASSERT
 
 	#endif //  defined( AK_ENABLE_ASSERTS )
 

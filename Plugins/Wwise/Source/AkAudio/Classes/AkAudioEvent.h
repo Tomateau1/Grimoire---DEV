@@ -376,7 +376,8 @@ public:
 		void* Cookie,
 		const AkCallbackType CallbackMask,
 		FWaitEndOfEventAction* LatentAction,
-		const EAkAudioContext AudioContext = EAkAudioContext::GameplayAudio);
+		const EAkAudioContext AudioContext = EAkAudioContext::GameplayAudio,
+		UAkComponent* AkComponent = nullptr);
 
 private:
 	template<typename FCreateCallbackPackage>

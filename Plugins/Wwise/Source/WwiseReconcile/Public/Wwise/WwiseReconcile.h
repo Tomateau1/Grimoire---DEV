@@ -53,8 +53,9 @@ struct FWwiseReconcileItem
 	FWwiseNewAsset WwiseAnyRef;
 	FGuid ItemId;
 	FString MovedPath;
+	bool bIsAssetReferenced = false;
 
-	bool IsAssetReferenced() const;
+	bool CheckForAssetReference();
 
 	bool operator==(const FWwiseReconcileItem& Other) const
 	{

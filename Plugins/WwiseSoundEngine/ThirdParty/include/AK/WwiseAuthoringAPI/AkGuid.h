@@ -45,7 +45,7 @@ namespace AK
 
 			AkGuid( const AkGuid& other )
 			{
-				memcpy( this, &other, sizeof other );
+				memcpy( (void*)this, &other, sizeof other );
 			}
 
 			AkGuid(uint32_t d1, uint16_t d2, uint16_t d3,
@@ -95,7 +95,7 @@ namespace AK
 
 			inline AkGuid& operator=(const AkGuid& other)
 			{
-				memcpy( this, &other, sizeof other );
+				memcpy( (void*)this, &other, sizeof other );
 				return *this;
 			}
 
@@ -125,7 +125,7 @@ namespace AK
 
 			inline AkGuid& Nullify()
 			{
-				memset(this, 0, sizeof(AkGuid));
+				memset((void*)this, 0, sizeof(AkGuid));
 				return *this;
 			}
 

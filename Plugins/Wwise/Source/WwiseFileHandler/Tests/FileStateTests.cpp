@@ -123,48 +123,55 @@ WWISE_TEST_CASE(FileHandler_FileState_Smoke, "Wwise::FileHandler::FileState_Smok
 
 	SECTION("Ordered callbacks")
 	{
-		FEventRef Done;
+		constexpr const int Count = 10;
+
+		struct FOrderedCallbacksContext
+		{
+			FEventRef Done;
+			std::atomic<int> Order{ 0 };
+		};
+		auto Context{ MakeShared<FOrderedCallbacksContext>() };
 		auto File{ MakeShared<FWwiseMockFileState>(40) };
 		File->bIsStreamedState = FWwiseMockFileState::OptionalBool::True;
 
-		int Order = 0;
-		constexpr const int Count = 10;
-
 		for (int NumOp = 0; NumOp < Count; ++NumOp)
 		{
-			File->IncrementCountAsync(EWwiseFileStateOperationOrigin::Loading, [NumOp, &Order](bool bResult) mutable
+			File->IncrementCountAsync(EWwiseFileStateOperationOrigin::Loading, [NumOp, Context](bool bResult) mutable
 			{
-				WWISE_CHECK(NumOp*4+0 == Order);
-				Order++;
+				WWISE_CHECK(NumOp*4+0 == Context->Order);
+				++Context->Order;
 			});
 			File->DecrementCountAsync(EWwiseFileStateOperationOrigin::Loading,
 				[](FWwiseFileState::FDecrementCountCallback&& Callback) mutable
 				{
 					Callback();
 				},
-				[NumOp, &Order]() mutable
+				[NumOp, Context]() mutable
 				{
-					WWISE_CHECK(NumOp*4+1 == Order);
-					Order++;
+					WWISE_CHECK(NumOp*4+1 == Context->Order);
+					++Context->Order;
 				});
-			File->IncrementCountAsync(EWwiseFileStateOperationOrigin::Loading, [NumOp, &Order](bool bResult) mutable
+			File->IncrementCountAsync(EWwiseFileStateOperationOrigin::Loading, [NumOp, Context](bool bResult) mutable
 			{
-				WWISE_CHECK(NumOp*4+2 == Order);
-				Order++;
+				WWISE_CHECK(NumOp*4+2 == Context->Order);
+				++Context->Order;
 			});
 			File->DecrementCountAsync(EWwiseFileStateOperationOrigin::Loading,
-				[&Done](FWwiseFileState::FDecrementCountCallback&& Callback) mutable
+				[](FWwiseFileState::FDecrementCountCallback&& Callback) mutable
 				{
 					Callback();
-					Done->Trigger();
 				},
-				[NumOp, &Order]() mutable
+				[NumOp, Context]() mutable
 				{
-					WWISE_CHECK(NumOp*4+3 == Order);
-					Order++;
+					WWISE_CHECK(NumOp*4+3 == Context->Order);
+					++Context->Order;
+					if (NumOp == Count - 1)
+					{
+						Context->Done->Trigger();
+					}
 				});
 		}
-		WWISE_CHECK(Done->Wait(10000));
+		WWISE_CHECK(Context->Done->Wait(10000));
 	}
 }
 

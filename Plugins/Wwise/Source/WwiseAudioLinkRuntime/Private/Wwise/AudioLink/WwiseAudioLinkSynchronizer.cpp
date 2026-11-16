@@ -36,6 +36,7 @@ void FWwiseAudioLinkSynchronizer::ExecuteBeginRender(AK::IAkGlobalPluginContext*
 	FOnRenderParams Params;
 	Params.BufferTickID = InContext->GetBufferTick();
 	Params.NumFrames = InContext->GetMaxBufferLength();
+	FReadScopeLock ReadLock(RwLock);
 	OnBeginRender.Broadcast(Params);
 }
 
@@ -44,6 +45,7 @@ void FWwiseAudioLinkSynchronizer::ExecuteEndRender(AK::IAkGlobalPluginContext* I
 	FOnRenderParams Params;
 	Params.BufferTickID = InContext->GetBufferTick();
 	Params.NumFrames = InContext->GetMaxBufferLength();
+	FReadScopeLock ReadLock(RwLock);
 	OnEndRender.Broadcast(Params);
 }
 
@@ -78,7 +80,10 @@ bool FWwiseAudioLinkSynchronizer::ExecuteOpenStream()
 	Params.NumFrames = Settings.uNumSamplesPerFrame;
 	Params.Name = TEXT("AudioLink for Wwise");
 	
-	OnOpenStream.Broadcast(Params);
+	{
+		FReadScopeLock ReadLock(RwLock);
+		OnOpenStream.Broadcast(Params);
+	}
 
 	return true;
 }
@@ -87,7 +92,10 @@ bool FWwiseAudioLinkSynchronizer::ExecuteCloseStream()
 {
 	UE_LOG(LogWwiseAudioLink, Verbose, TEXT("FWwiseAudioLinkSynchronizer::ExecuteCloseStream: Closing stream between Unreal and Wwise."));
 
-	OnCloseStream.Broadcast();
+	{
+		FReadScopeLock ReadLock(RwLock);
+		OnCloseStream.Broadcast();
+	}
 
 	return true;
 }

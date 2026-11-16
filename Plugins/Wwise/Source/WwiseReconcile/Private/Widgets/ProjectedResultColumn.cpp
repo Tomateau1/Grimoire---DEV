@@ -58,7 +58,7 @@ const TSharedRef<SWidget> FProjectedResultColumn::ConstructRowWidget(FWwiseRecon
 			];
 		}
 
-		if (TreeItem.IsAssetReferenced())
+		if (TreeItem.bIsAssetReferenced)
 		{
 			return SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()

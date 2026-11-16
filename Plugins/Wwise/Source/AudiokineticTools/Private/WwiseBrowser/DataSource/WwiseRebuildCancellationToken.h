@@ -15,21 +15,24 @@ in a written agreement between you and Audiokinetic Inc.
 Copyright (c) 2026 Audiokinetic Inc.
 *******************************************************************************/
 
-using UnrealBuildTool;
-using System;
-using System.IO;
-using System.Collections.Generic;
+#pragma once
 
-public class WwiseUEPlatform_2025_1_WinGDK : WwiseUEPlatform_WinGDK
-{
-	public WwiseUEPlatform_2025_1_WinGDK(ReadOnlyTargetRules in_TargetRules, string in_ThirdPartyFolder) : base(in_TargetRules, in_ThirdPartyFolder) {}
-	
-	protected override Version FirstSoundEngineVersionWithoutWinGC { get { return new Version(2025, 1, 3, 0); } }
-}
+#include <atomic>
 
-public class WwiseUEPlatform_2025_1_WinAnvil : WwiseUEPlatform_2025_1_WinGDK
+#include "CoreMinimal.h"
+
+struct FWwiseRebuildCancellationToken
 {
-	public WwiseUEPlatform_2025_1_WinAnvil(ReadOnlyTargetRules in_TargetRules, string in_ThirdPartyFolder) : base(in_TargetRules, in_ThirdPartyFolder) {}
+	const std::atomic<uint32>* GenerationPtr = nullptr;
+	uint32 ExpectedGeneration = 0;
+
+	bool IsCancelled() const
+	{
+		return GenerationPtr && GenerationPtr->load(std::memory_order_relaxed) != ExpectedGeneration;
+	}
 	
-	protected override Version FirstSoundEngineVersionWithoutWinGC { get { return new Version(2025, 1, 3, 0); } }
-}
+	bool ShouldCancelAtInterval(int32& Counter, int32 Interval)
+	{
+		return (++Counter % Interval == 0) && IsCancelled();
+	}
+};

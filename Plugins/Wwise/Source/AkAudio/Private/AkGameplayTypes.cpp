@@ -32,22 +32,22 @@ Copyright (c) 2026 Audiokinetic Inc.
 #include "AkCallbackInfoPool.h"
 #include "HAL/PlatformString.h"
 
-UAkCallbackInfo* AkCallbackTypeHelpers::GetBlueprintableCallbackInfo(EAkCallbackType CallbackType, AkCombinedCallbackInfo* CallbackInfo)
+UAkCallbackInfo* AkCallbackTypeHelpers::GetBlueprintableCallbackInfo(EAkCallbackType CallbackType, AkCombinedCallbackInfo* CallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	switch (CallbackType)
 	{
 	case EAkCallbackType::EndOfEvent:
-		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo);
+		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo, WeakAkComponent);
 	case EAkCallbackType::EndOfDynamicSequenceItem:
-		return UAkDynamicSequenceItemCallbackInfo::Create(CallbackInfo);
+		return UAkDynamicSequenceItemCallbackInfo::Create(CallbackInfo, WeakAkComponent);
 	case EAkCallbackType::Marker:
-		return UAkMarkerCallbackInfo::Create(CallbackInfo);
+		return UAkMarkerCallbackInfo::Create(CallbackInfo, WeakAkComponent);
 	case EAkCallbackType::Duration:
-		return UAkDurationCallbackInfo::Create(CallbackInfo);
+		return UAkDurationCallbackInfo::Create(CallbackInfo, WeakAkComponent);
 	case EAkCallbackType::Starvation:
-		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo);
+		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo, WeakAkComponent);
 	case EAkCallbackType::MusicPlayStarted:
-		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo);
+		return UAkEventCallbackInfo::Create(&CallbackInfo->eventInfo, WeakAkComponent);
 	case EAkCallbackType::MusicSyncBeat:
 	case EAkCallbackType::MusicSyncBar:
 	case EAkCallbackType::MusicSyncEntry:
@@ -55,9 +55,9 @@ UAkCallbackInfo* AkCallbackTypeHelpers::GetBlueprintableCallbackInfo(EAkCallback
 	case EAkCallbackType::MusicSyncGrid:
 	case EAkCallbackType::MusicSyncUserCue:
 	case EAkCallbackType::MusicSyncPoint:
-		return UAkMusicSyncCallbackInfo::Create(CallbackInfo);
+		return UAkMusicSyncCallbackInfo::Create(CallbackInfo, WeakAkComponent);
 	case EAkCallbackType::MIDIEvent:
-		return UAkMIDIEventCallbackInfo::Create(CallbackInfo);
+		return UAkMIDIEventCallbackInfo::Create(CallbackInfo, WeakAkComponent);
 	default: 
 		return nullptr;
 	}
@@ -253,7 +253,7 @@ UAkCallbackInfo::UAkCallbackInfo( class FObjectInitializer const & ObjectInitial
 	Super(ObjectInitializer)
 {}
 
-UAkCallbackInfo* UAkCallbackInfo::Create(AkGameObjectID GameObjectID)
+UAkCallbackInfo* UAkCallbackInfo::Create(AkGameObjectID GameObjectID, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -270,7 +270,7 @@ UAkCallbackInfo* UAkCallbackInfo::Create(AkGameObjectID GameObjectID)
 	auto CbInfo = CallbackInfoPool->Acquire<UAkCallbackInfo>();
 	if (CbInfo)
 	{
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(GameObjectID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 	}
 	return CbInfo;
 }
@@ -284,7 +284,7 @@ UAkEventCallbackInfo::UAkEventCallbackInfo(class FObjectInitializer const & Obje
 	Super(ObjectInitializer)
 {}
 
-UAkEventCallbackInfo* UAkEventCallbackInfo::Create(AkEventCallbackInfo* AkEventCbInfo)
+UAkEventCallbackInfo* UAkEventCallbackInfo::Create(AkEventCallbackInfo* AkEventCbInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
     if (UNLIKELY(!AudioDevice))
@@ -301,7 +301,7 @@ UAkEventCallbackInfo* UAkEventCallbackInfo::Create(AkEventCallbackInfo* AkEventC
 	auto CbInfo = CallbackInfoPool->Acquire<UAkEventCallbackInfo>();
 	if (CbInfo)
 	{
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(AkEventCbInfo->gameObjID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->PlayingID = AkEventCbInfo->playingID;
 		CbInfo->EventID = AkEventCbInfo->eventID;
 	}
@@ -312,7 +312,7 @@ UAkDynamicSequenceItemCallbackInfo::UAkDynamicSequenceItemCallbackInfo(class FOb
 	Super(ObjectInitializer)
 {}
 
-UAkDynamicSequenceItemCallbackInfo* UAkDynamicSequenceItemCallbackInfo::Create(AkCombinedCallbackInfo * akCallbackInfo)
+UAkDynamicSequenceItemCallbackInfo* UAkDynamicSequenceItemCallbackInfo::Create(AkCombinedCallbackInfo * akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -334,7 +334,8 @@ UAkDynamicSequenceItemCallbackInfo* UAkDynamicSequenceItemCallbackInfo::Create(A
 #else
 		AkDynamicSequenceItemCallbackInfo* AkDynamicSequenceCbInfo = reinterpret_cast<AkDynamicSequenceItemCallbackInfo*>(akCallbackInfo);
 #endif
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(akCallbackInfo->eventInfo.gameObjID);
+
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->AudioNodeID = AkDynamicSequenceCbInfo->audioNodeID;
 		CbInfo->PlayingID = akCallbackInfo->eventInfo.gameObjID;
 		CbInfo->CustomInfo = static_cast<UObject*>(AkDynamicSequenceCbInfo->pCustomInfo);
@@ -346,7 +347,7 @@ UAkMIDIEventCallbackInfo::UAkMIDIEventCallbackInfo(class FObjectInitializer cons
 	Super(ObjectInitializer)
 {}
 
-UAkMIDIEventCallbackInfo* UAkMIDIEventCallbackInfo::Create(AkCombinedCallbackInfo * akCallbackInfo)
+UAkMIDIEventCallbackInfo* UAkMIDIEventCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -369,7 +370,7 @@ UAkMIDIEventCallbackInfo* UAkMIDIEventCallbackInfo::Create(AkCombinedCallbackInf
 		AkMIDIEventCallbackInfo* AkMIDICbInfo = static_cast<AkMIDIEventCallbackInfo*>(&akCallbackInfo->eventInfo);
 #endif
 
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(akCallbackInfo->eventInfo.gameObjID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->PlayingID = akCallbackInfo->eventInfo.playingID;
 		CbInfo->EventID = akCallbackInfo->eventInfo.eventID;
 		CbInfo->AkMidiEvent = AkMIDICbInfo->midiEvent;
@@ -381,7 +382,7 @@ UAkMarkerCallbackInfo::UAkMarkerCallbackInfo(class FObjectInitializer const & Ob
 	Super(ObjectInitializer)
 {}
 
-UAkMarkerCallbackInfo* UAkMarkerCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo)
+UAkMarkerCallbackInfo* UAkMarkerCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -404,7 +405,7 @@ UAkMarkerCallbackInfo* UAkMarkerCallbackInfo::Create(AkCombinedCallbackInfo* akC
 		AkMarkerCallbackInfo* AkMarkerCbInfo = static_cast<AkMarkerCallbackInfo*>(&akCallbackInfo->eventInfo);
 #endif
 
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(akCallbackInfo->eventInfo.gameObjID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->PlayingID = akCallbackInfo->eventInfo.playingID;
 		CbInfo->EventID = akCallbackInfo->eventInfo.eventID;
 		CbInfo->Identifier = AkMarkerCbInfo->uIdentifier;
@@ -418,7 +419,7 @@ UAkDurationCallbackInfo::UAkDurationCallbackInfo(class FObjectInitializer const 
 	Super(ObjectInitializer)
 {}
 
-UAkDurationCallbackInfo* UAkDurationCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo)
+UAkDurationCallbackInfo* UAkDurationCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -441,7 +442,7 @@ UAkDurationCallbackInfo* UAkDurationCallbackInfo::Create(AkCombinedCallbackInfo*
 		AkDurationCallbackInfo* AkDurationCbInfo = static_cast<AkDurationCallbackInfo*>(&akCallbackInfo->eventInfo);
 #endif
 
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(akCallbackInfo->eventInfo.gameObjID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->PlayingID = akCallbackInfo->eventInfo.playingID;
 		CbInfo->EventID = akCallbackInfo->eventInfo.eventID;
 		CbInfo->Duration = AkDurationCbInfo->fDuration;
@@ -457,7 +458,7 @@ UAkMusicSyncCallbackInfo::UAkMusicSyncCallbackInfo(class FObjectInitializer cons
 	Super(ObjectInitializer)
 {}
 
-UAkMusicSyncCallbackInfo* UAkMusicSyncCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo)
+UAkMusicSyncCallbackInfo* UAkMusicSyncCallbackInfo::Create(AkCombinedCallbackInfo* akCallbackInfo, TWeakObjectPtr<UAkComponent> WeakAkComponent)
 {
 	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
 	if (UNLIKELY(!AudioDevice))
@@ -480,7 +481,7 @@ UAkMusicSyncCallbackInfo* UAkMusicSyncCallbackInfo::Create(AkCombinedCallbackInf
 		AkMusicSyncCallbackInfo* AkMusicCbInfo = reinterpret_cast<AkMusicSyncCallbackInfo*>(akCallbackInfo);
 #endif
 
-		CbInfo->AkComponent = UAkComponent::GetAkComponent(akCallbackInfo->eventInfo.gameObjID);
+		CbInfo->AkComponent = WeakAkComponent.Get();
 		CbInfo->PlayingID = akCallbackInfo->eventInfo.playingID;
 		CbInfo->SegmentInfo = AkMusicCbInfo->segmentInfo;
 		CbInfo->MusicSyncType = AkCallbackTypeHelpers::GetBlueprintCallbackTypeFromAkCallbackType(AkMusicCbInfo->musicSyncType);

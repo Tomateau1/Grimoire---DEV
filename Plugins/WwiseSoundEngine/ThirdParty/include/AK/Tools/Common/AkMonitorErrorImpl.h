@@ -147,7 +147,7 @@ namespace AK
 
 			ERROR_CODE_DEF(AKTEXT("ErrorCode_AddOutputListenerIdWithZeroListeners"), AKTEXT("Non-empty array of listeners specified for AddOutput() but uNumListeners is set to zero.")),
 
-			ERROR_CODE_DEF(AKTEXT("ErrorCode_3DObjectLimitExceeded"), AKTEXT("3D audio object limit exceeded; object %u instigated by voice/bus will be mixed.")),
+			ERROR_CODE_DEF(AKTEXT("ErrorCode_3DObjectLimitExceeded"), AKTEXT("3D audio object limit of %u exceeded; new audio objects will be mixed.")),
 			ERROR_CODE_DEF(AKTEXT("ErrorCode_OpusHWFatalError"), AKTEXT("Fatal XAPU failure, Opus sounds will glitch while it is being reset.")),
 			ERROR_CODE_DEF(AKTEXT("ErrorCode_OpusHWDecodeUnavailable"), AKTEXT("AkInitSettings::uNumSamplesPerFrame value unsupported by Opus hardware decoder. Supported size: 256, 512 and 1024. Opus will be disabled")),
 			ERROR_CODE_DEF(AKTEXT("ErrorCode_OpusHWTimeout"), AKTEXT("Opus hardware stopped responding ")),

@@ -124,6 +124,8 @@ void UWwiseAssetLibraryEventFilter::PreFilter(
 		const FWwiseAssetLibraryFilteringSharedData& Shared,
 		const FWwiseAssetLibraryInfo& AssetLibraryInfo)
 {
+	CleanUpTemporaryData();
+
 	if (!bUseRegex)
 	{
 		TArray<FString> GlobFiltersArray;
@@ -133,8 +135,14 @@ void UWwiseAssetLibraryEventFilter::PreFilter(
 
 	{
 		const WwiseEventGlobalIdsMap& Events = Shared.Db.GetEvents();
-		for (auto Event : Events)
+		int32 ProcessedCount = 0;
+		for(const auto& Event: Events)
 		{
+			if (++ProcessedCount % EventFilterCancellationCheckInterval == 0 && Shared.IsCancelled())
+			{
+				return;
+			}
+
 			const bool bInside = PatternMatch(**Event.Value.EventName());
 			if (!bInside && !bIncludeSingleReferenceAssetsOnly)
 			{
@@ -157,8 +165,14 @@ void UWwiseAssetLibraryEventFilter::PreFilter(
 	}
 	{
 		const WwiseDialogueEventGlobalIdsMap& Events = Shared.Db.GetDialogueEvents();
-		for (auto Event : Events)
+		int32 ProcessedCount = 0;
+		for(const auto& Event: Events)
 		{
+			if (++ProcessedCount % EventFilterCancellationCheckInterval == 0 && Shared.IsCancelled())
+			{
+				return;
+			}
+
 			const bool bInside = PatternMatch(**Event.Value.DialogueEventName());
 			if (!bInside && !bIncludeSingleReferenceAssetsOnly)
 			{
@@ -221,9 +235,7 @@ bool UWwiseAssetLibraryEventFilter::IsAssetAvailable(const FWwiseAssetLibraryFil
 void UWwiseAssetLibraryEventFilter::PostFilter(const FWwiseAssetLibraryFilteringSharedData& Shared,
 	const FWwiseAssetLibraryInfo& AssetLibraryInfo)
 {
-	GlobFilters.Empty();
-	AdditionalMedia.Empty();
-	AdditionalSoundBank.Empty();
+	CleanUpTemporaryData();
 }
 
 void UWwiseAssetLibraryEventFilter::Reset(const FString& NewFilter, bool NewIncludeSingleReferenceAssetsOnly, bool NewUseRegex)
@@ -231,4 +243,13 @@ void UWwiseAssetLibraryEventFilter::Reset(const FString& NewFilter, bool NewIncl
 	Filter = NewFilter;
 	bIncludeSingleReferenceAssetsOnly = NewIncludeSingleReferenceAssetsOnly;
 	bUseRegex = NewUseRegex;
+}
+
+void UWwiseAssetLibraryEventFilter::CleanUpTemporaryData()
+{
+	GlobFilters.Empty();
+	AdditionalMedia.Empty();
+	AdditionalSoundBank.Empty();
+	OutsideMedia.Empty();
+	OutsideSoundBank.Empty();
 }

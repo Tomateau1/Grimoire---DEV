@@ -1200,7 +1200,7 @@ struct AkCmd_AddOutputCaptureMarker
 struct AkCmd_ControlOfflineRendering
 {
 	AkUInt32 isEnabled;             ///< Whether offline rendering should be activated or not.
-	AkReal32 frameTimeInSeconds;    ///< Frame time in seconds used during offline rendering. Set to 0 to leave the frame time the same as the last time it was set.
+	AkReal32 frameTimeInSeconds;    ///< Frame time in seconds used during offline rendering. Set to a negative value to leave the frame time the same as the last time it was set.
 };
 
 /// Sets the random seed value. Can be used to synchronize randomness

@@ -379,21 +379,24 @@ bool FWwiseExecutionQueue::KeepWorking()
 		return false;
 	}
 
-	// Keep running (AddOp)
-	if (FPlatformProcess::SupportsMultithreading())
+	if (FPlatformProcess::SupportsMultithreading() && ThreadPool)
 	{
-		return true;
+		ThreadPool->AddQueuedWork(new ExecutionQueuePoolTask([this]
+		{
+			SCOPED_NAMED_EVENT_TCHAR_CONDITIONAL(DebugName, WwiseNamedEvents::Color3, DebugName != nullptr);
+			Work();
+		}));
 	}
 	else
 	{
-		LaunchWwiseTask(WWISECONCURRENCY_ASYNC_NAME("FWwiseExecutionQueue::StartWorkerIfNeeded"),
+		LaunchWwiseTask(WWISECONCURRENCY_ASYNC_NAME("FWwiseExecutionQueue::KeepWorking"),
 			TaskPriority, EWwiseTaskFlags::DoNotRunInsideBusyWait, [this]
 		{
 			Work();
 		});
-
-		return false;
 	}
+
+	return false;
 }
 
 void FWwiseExecutionQueue::ProcessWork()
@@ -403,7 +406,13 @@ void FWwiseExecutionQueue::ProcessWork()
 	auto* PreviousExecutionQueue = TLS::CurrentExecutionQueue;
 	TLS::CurrentExecutionQueue = this;
 
+	TArray<FOpQueueItem*, TInlineAllocator<16>> ItemsToProcess;
 	while (auto* Op = OpQueue.Pop())
+	{
+		ItemsToProcess.Add(Op);
+	}
+
+	for (auto* Op : ItemsToProcess)
 	{
 #if ENABLE_NAMED_EVENTS
 		SCOPED_NAMED_EVENT_TCHAR_CONDITIONAL(Op->DebugName, WwiseNamedEvents::Color3, Op->DebugName != nullptr);

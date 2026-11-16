@@ -76,8 +76,8 @@ void FWwisePackagingSettingsDetails::CustomizeDetails(IDetailLayoutBuilder& Deta
 					CustomizedSettings->ProcessGameplayModulesUsingDefaultGroup();
 					return(FReply::Handled());
 				})
-				.Visibility_Raw(this, &FWwisePackagingSettingsDetails::IsDisplayPreviewVisible)
-				.IsEnabled_Raw(this, &FWwisePackagingSettingsDetails::IsDisplayPreviewEnabled)
+				.Visibility(this, &FWwisePackagingSettingsDetails::IsDisplayPreviewVisible)
+				.IsEnabled(this, &FWwisePackagingSettingsDetails::IsDisplayPreviewEnabled)
 			]
 		];
 }

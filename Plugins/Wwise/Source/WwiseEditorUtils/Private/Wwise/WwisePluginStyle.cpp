@@ -27,6 +27,7 @@ TSharedPtr< FWwisePluginStyle > FWwisePluginStyle::StyleInstance;
 const FName FWwisePluginStyle::AcousticTextureIconName{ TEXT("Wwise.AcousticTextureIcon") };
 const FName FWwisePluginStyle::ActorMixerIconName{ TEXT("Wwise.ActorMixerIcon") };
 const FName FWwisePluginStyle::AssetLibraryIconName{ TEXT("Wwise.AssetLibraryIcon") };
+const FName FWwisePluginStyle::AssetLibraryGroupIconName{ TEXT("Wwise.AssetLibraryGroupIcon") };
 const FName FWwisePluginStyle::AssetLibraryFilterIconName{ TEXT("Wwise.AssetLibraryFilterIcon") };
 const FName FWwisePluginStyle::AudioDeviceIconName{ TEXT("Wwise.AudioDeviceIcon") };
 const FName FWwisePluginStyle::AudioNodeIconName{ TEXT("Wwise.AudioNodeIcon") };
@@ -97,6 +98,7 @@ void FWwisePluginStyle::Initialize()
 	SetV(AcousticTextureIconName, "ObjectIcons_AcousticTexture_nor", Icon);
 	SetV(ActorMixerIconName, "ObjectIcons_ActorMixer_nor", Icon);
 	SetV(AssetLibraryIconName, "ObjectIcons_Asset_Library", Icon);
+	SetV(AssetLibraryGroupIconName, "ObjectIcons_Asset_Library_Group", Icon);
 	SetV(AssetLibraryFilterIconName, "ObjectIcons_Asset_Library_Filter", Icon);
 	SetV(AudioDeviceIconName, "ObjectIcons_AudioDevicePlugin_nor", Icon);
 	SetV(AudioNodeIconName, "ObjectIcons_AudioObjectSound_nor", Icon);
@@ -153,6 +155,7 @@ void FWwisePluginStyle::Initialize()
 	SetV("ClassIcon.AkSwitchValue", "ObjectIcons_Switch_nor", Icon);
 	SetV("ClassIcon.AkTrigger", "ObjectIcons_Trigger_nor", Icon);
 	SetV("ClassIcon.WwiseAssetLibrary", "ObjectIcons_Asset_Library", Icon);
+	SetV("ClassIcon.WwiseAssetLibraryGroup", "ObjectIcons_Asset_Library_Group", Icon);
 	SetV("ClassIcon.WwiseSharedAssetLibraryFilter", "ObjectIcons_Asset_Library_Filter", Icon);
 	SetV("ClassIcon.AkAudioDeviceShareSet", "ObjectIcons_AudioDevicePlugin_nor", Icon);
 	SetV("ClassIcon.AkAcousticTexture", "ObjectIcons_AcousticTexture_nor", Icon);
@@ -176,6 +179,7 @@ void FWwisePluginStyle::Initialize()
 	SetV("ClassThumbnail.AkSwitchValue", "ObjectIcons_Switch_nor", Thumbnail);
 	SetV("ClassThumbnail.AkTrigger", "ObjectIcons_Trigger_nor", Thumbnail);
 	SetV("ClassThumbnail.WwiseAssetLibrary", "ObjectIcons_Asset_Library", Thumbnail);
+	SetV("ClassThumbnail.WwiseAssetLibraryGroup", "ObjectIcons_Asset_Library_Group", Thumbnail);
 	SetV("ClassThumbnail.WwiseSharedAssetLibraryFilter", "ObjectIcons_Asset_Library_Filter", Thumbnail);
 
 	FSlateStyleRegistry::RegisterSlateStyle(*this);

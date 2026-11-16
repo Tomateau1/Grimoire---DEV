@@ -248,6 +248,8 @@ class WAAPI_URI:
     ak_wwise_core_plugin_getproperty = u"ak.wwise.core.plugin.getProperty"
     # Sent when a new entry is added to the capture log. Note that all entries are being sent. No filtering is applied as opposed to the Capture Log view.
     ak_wwise_core_profiler_capturelog_itemadded = u"ak.wwise.core.profiler.captureLog.itemAdded"
+    # Saves the content of the capture log to a text file according to the given file path.
+    ak_wwise_core_profiler_capturelog_save = u"ak.wwise.core.profiler.captureLog.save"
     # Specifies the type of data you want to capture. Overrides the user's profiler settings.
     ak_wwise_core_profiler_enableprofilerdata = u"ak.wwise.core.profiler.enableProfilerData"
     # Sent when a game object has been registered.

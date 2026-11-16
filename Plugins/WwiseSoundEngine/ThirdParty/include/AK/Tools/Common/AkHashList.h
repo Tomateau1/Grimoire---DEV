@@ -66,7 +66,7 @@ public:
 
 		inline Iterator& operator++()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			pItem = pItem->pNextItem;
 			
 			while ( ( pItem == NULL ) && ( ++uiTable < pTable->Length() ) )
@@ -77,13 +77,13 @@ public:
 
 		inline MapStruct<T_KEY, T_ITEM>& operator*()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			return pItem->Assoc;
 		}
 
 		inline MapStruct<T_KEY, T_ITEM>* operator->()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return &pItem->Assoc;
 		}
 
@@ -106,7 +106,7 @@ public:
 
 		inline ConstIterator& operator++()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			pItem = pItem->pNextItem;
 
 			while ((pItem == NULL) && (++uiTable < pTable->Length()))
@@ -117,13 +117,13 @@ public:
 
 		inline const MapStruct<T_KEY, T_ITEM>& operator*()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return pItem->Assoc;
 		}
 
 		inline MapStruct<T_KEY, T_ITEM>* operator->() const
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return &pItem->Assoc;
 		}
 
@@ -146,7 +146,7 @@ public:
 
 		IteratorEx& operator++()
 		{
-			AKASSERT( this->pItem );
+			AKASSERTD( this->pItem );
 			
 			pPrevItem = this->pItem;
 			this->pItem = this->pItem->pNextItem;
@@ -167,7 +167,7 @@ public:
 
 		ConstIteratorEx& operator++()
 		{
-			AKASSERT(this->pItem);
+			AKASSERTD(this->pItem);
 
 			pPrevItem = this->pItem;
 			this->pItem = this->pItem->pNextItem;
@@ -372,7 +372,7 @@ public:
 
 	~AkHashList()
 	{
-		AKASSERT(m_uiSize == 0);
+		AKASSERTD(m_uiSize == 0);
 		m_table.Term();
 	}
 
@@ -418,7 +418,7 @@ public:
 		{
 			AkHashType uiTable = AkHash(in_pItem->Assoc.key) % HashSize();
 
-			AKASSERT(!ExistsInList(in_pItem->Assoc.key, uiTable)); // Item must not exist in list !
+			AKASSERTD(!ExistsInList(in_pItem->Assoc.key, uiTable)); // Item must not exist in list !
 
 			// Add new entry
 
@@ -615,7 +615,7 @@ public:
 protected:
 	T_ITEM * ExistsInList( T_KEY in_Key, AkUIntPtr in_uiTable )
 	{
-		AKASSERT(HashSize() > 0);
+		AKASSERTD(HashSize() > 0);
 		
 		Item * pItem = m_table[(AkUInt32)in_uiTable];
 		while (pItem != NULL)
@@ -684,7 +684,7 @@ public:
 
 		inline Iterator& operator++()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			pItem = LIST_POLICY::Next(pItem);
 			
 			while ((pItem == NULL) && (++uiTable < pTable->Length()))
@@ -695,13 +695,13 @@ public:
 
 		inline T_MAPSTRUCT * operator*()
 		{
-			AKASSERT( pItem );
+			AKASSERTD( pItem );
 			return pItem;
 		}
 
 		inline T_MAPSTRUCT* operator->()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return pItem;
 		}
 
@@ -724,7 +724,7 @@ public:
 
 		inline ConstIterator& operator++()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			pItem = pItem->pNextItem;
 
 			while ((pItem == NULL) && (++uiTable < pTable->Length()))
@@ -735,13 +735,13 @@ public:
 
 		inline const T_MAPSTRUCT* operator*()
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return pItem;
 		}
 
 		inline const T_MAPSTRUCT* operator->() const
 		{
-			AKASSERT(pItem);
+			AKASSERTD(pItem);
 			return pItem;
 		}
 
@@ -764,7 +764,7 @@ public:
 
 		IteratorEx& operator++()
 		{
-			AKASSERT(this->pItem);
+			AKASSERTD(this->pItem);
 
 			pPrevItem = this->pItem;
 			this->pItem = this->pItem->pNextItem;
@@ -785,7 +785,7 @@ public:
 
 		ConstIteratorEx& operator++()
 		{
-			AKASSERT( this->pItem );
+			AKASSERTD( this->pItem );
 			
 			pPrevItem = this->pItem;
 			this->pItem = LIST_POLICY::Next(this->pItem);
@@ -998,7 +998,7 @@ public:
 
 	void Term()
 	{
-		AKASSERT( m_uiSize == 0 );
+		AKASSERTD( m_uiSize == 0 );
 		m_table.Term();
 	}
 
@@ -1037,7 +1037,7 @@ public:
 		if (CheckSize())
 		{
 			AkHashType uiTable = AkHash(KEY_POLICY::Key(in_pItem)) % HashSize();
-			AKASSERT(!ExistsInList(KEY_POLICY::Key(in_pItem), uiTable)); // T_MAPSTRUCT must not exist in list !
+			AKASSERTD(!ExistsInList(KEY_POLICY::Key(in_pItem), uiTable)); // T_MAPSTRUCT must not exist in list !
 			_Set(in_pItem, uiTable);
 			return true;
 		}

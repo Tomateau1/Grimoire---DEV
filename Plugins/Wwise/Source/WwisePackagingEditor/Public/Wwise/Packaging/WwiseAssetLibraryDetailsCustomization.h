@@ -180,11 +180,14 @@ protected:
 	// Number of operations waiting to be executed
 	std::atomic<uint32> WorkersWaiting{ 0 };
 
+	// Cancellation token for aborting long-running filter operations
+	std::atomic<uint32> RebuildCancellationToken{ 0 };
+
 	// Is a rebuild already requested (we don't want to do it twice).
-	bool bRebuildAlreadyRequested{ false };
+	std::atomic<bool> bRebuildAlreadyRequested{ false };
 
 	// Is an search and sort already requested (we don't want to do it twice).
-	bool bSearchAndSortAlreadyRequested{ false };
+	std::atomic<bool> bSearchAndSortAlreadyRequested{ false };
 
 	// Tree view for the filtered assets
 	TSharedPtr<STreeView<FFilteredAssetRef>> FilteredAssetsTreeView;
@@ -222,7 +225,7 @@ protected:
 	virtual void OnSortModeChanged(EColumnSortPriority::Type Priority, const FName& Column, EColumnSortMode::Type Mode);
 	
 	virtual void RebuildFilteredAssets();
-	virtual bool CalculateFilteredAssets(UWwiseFilterableAssetLibrary* AssetLibrary, TUniquePtr<FWwiseAssetLibraryFilteringSharedData>& FilteringSharedData, const TArray<FAssetData>& AssetData);
+	virtual bool CalculateFilteredAssets(UWwiseFilterableAssetLibrary* AssetLibrary, TUniquePtr<FWwiseAssetLibraryFilteringSharedData>& FilteringSharedData, const TArray<FAssetData>& AssetData, uint32 CurrentToken);
 	virtual bool CopyFilteredAssets(TUniquePtr<FWwiseAssetLibraryFilteringSharedData>& FilteringSharedData);
 	virtual void ApplySearchAndSort();
 	virtual void RefreshTree();
@@ -235,7 +238,7 @@ protected:
 	virtual FReply HonorPackagingSettingsLinkClicked() const;
 	virtual bool IsPackagingSettingsHonored() const;
 	virtual void FilterPackagingSettings(FWwiseAssetLibraryProcessor* Processor,
-		const TUniquePtr<FWwiseAssetLibraryFilteringSharedData>& FilteringSharedData, UWwiseFilterableAssetLibrary* StopBefore) const;
+		const TUniquePtr<FWwiseAssetLibraryFilteringSharedData>& FilteringSharedData, UWwiseFilterableAssetLibrary* StopBefore, uint32 CurrentToken) const;
 	virtual void SetGameplayModulesTargeted(TArray<FString>& PackagePaths, TArray<FString>& ExcludedGameplayModules) const;
 	virtual EVisibility IsLibraryUnusedVisible() const;
 	virtual bool IsLibraryUnusedEnabled() const;

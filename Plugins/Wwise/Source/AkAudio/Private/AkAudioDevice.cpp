@@ -87,7 +87,7 @@ Copyright (c) 2026 Audiokinetic Inc.
 
 #endif
 
-#if WITH_EDITORONLY_DATA && !defined(AK_OPTIMIZED)
+#if WITH_EDITORONLY_DATA
 #include "Wwise/WwiseProjectDatabase.h"
 #include "Wwise/WwiseStringConverter.h"
 #endif
@@ -746,10 +746,16 @@ bool FAkAudioDevice::Init()
 		// Check now if we need to add the Editor Listener
 		if (GEditor)
 		{
-			FWorldContext& WorldCtx = GEditor->GetEditorWorldContext(false);
-			if (UWorld* EditorWorld = WorldCtx.World())
+			for (auto& WorldContext : GEditor->GetWorldContexts())
 			{
-				AddEditorListenerToEditorWorld(EditorWorld);
+				if (WorldContext.WorldType == EWorldType::Editor)
+				{
+					if (UWorld* EditorWorld = WorldContext.World())
+					{
+						AddEditorListenerToEditorWorld(EditorWorld);
+						break;
+					}
+				}
 			}
 		}
 		FWorldDelegates::OnPostWorldInitialization.AddLambda(
@@ -1641,7 +1647,7 @@ FWwiseLanguageCookedData FAkAudioDevice::GetLanguageCookedDataFromString(const F
 
 bool FAkAudioDevice::GetLanguageCookedDataFromString(const FString& WwiseLanguage, FWwiseLanguageCookedData& OutCookedData)
 {
-#if WITH_EDITOR
+#if WITH_EDITORONLY_DATA
 	const auto* ProjectDatabase = FWwiseProjectDatabase::Get();
 	if (UNLIKELY(!ProjectDatabase))
 	{
@@ -2006,37 +2012,6 @@ void FAkAudioDevice::CleanDefaultListeners()
 	{
 		m_defaultListeners.Add(Listener);
 	}
-}
-
-template<typename FCreateCallbackPackage>
-AkPlayingID FAkAudioDevice::PostEventWithCallbackPackageOnAkGameObject(
-	const AkUInt32 EventShortID,
-	UAkGameObject* GameObject,
-	const TArray<AkExternalSourceInfo>& ExternalSources,
-	FCreateCallbackPackage CreateCallbackPackage,
-	EAkAudioContext AudioContext
-)
-{
-	SCOPED_AKAUDIO_EVENT(TEXT("FAkAudioDevice::PostEventWithCallbackPackageOnAkGameObject"));
-	AkPlayingID PlayingID = AK_INVALID_PLAYING_ID;
-
-	if (m_bSoundEngineInitialized && GameObject && CallbackManager)
-	{
-		if (EventShortID != AK_INVALID_UNIQUE_ID && GameObject->AllowAudioPlayback())
-		{
-			GameObject->UpdateObstructionAndOcclusion();
-
-			auto gameObjID = GameObject->GetAkGameObjectID();
-
-			PlayingID = PostEventWithCallbackPackageOnGameObjectId(EventShortID, gameObjID, ExternalSources, CreateCallbackPackage, AudioContext);
-			if (PlayingID != AK_INVALID_PLAYING_ID)
-			{
-				GameObject->EventPosted();
-			}
-		}
-	}
-
-	return PlayingID;
 }
 
 void FAkAudioDevice::SAComponentAddedRemoved(UWorld* World)

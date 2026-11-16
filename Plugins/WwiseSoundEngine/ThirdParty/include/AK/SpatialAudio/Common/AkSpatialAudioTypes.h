@@ -74,9 +74,10 @@ enum AkRoomDistanceBehavior
 	/// Distance attenuation is applied to other rooms when the listener is in this room, because this room is a distinct space.
 	AkRoomDistanceBehavior_Subtract,
 
-	/// [\ref spatial_audio_experimental "Experimental"] This room does not participate in the distance calculation of other rooms.
+	/// [\ref spatial_audio_experimental "Experimental"] This room is not included in the distance calculation of other rooms.
 	/// Distance attenuation does not apply to this room's parents, or overlapping sections of lower priority rooms,
 	/// because this room does not form a distinct space and is not subtracted from the shape of other rooms.
+	/// Diffraction, transmission loss, and other attenuations are not affected.
 	AkRoomDistanceBehavior_Exclude,
 
 	AkRoomDistanceBehavior_Default = AkRoomDistanceBehavior_Subtract
@@ -750,7 +751,7 @@ struct AkRoomParams
 	AkGeometrySetID					GeometryInstanceID;
 
 	/// Associate a priority with this room. Room priority is used by the room containment system to disambiguate cases where an object is inside several rooms at the same time. In this case, the room with the higher priority is selected.
-	/// Default priority is 100.
+	/// Default priority is 100. The outdoor Room ignores \c AkRoomParams::RoomPriority and always has the lowest possible priority of -FLT_MAX.
 	/// \aknote If several rooms have the same highest room priority, the inner one is selected.
 	AkReal32						RoomPriority;
 

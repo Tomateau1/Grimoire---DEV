@@ -35,6 +35,7 @@ public:
 	static const FName AcousticTextureIconName;
 	static const FName ActorMixerIconName;
 	static const FName AssetLibraryIconName;
+	static const FName AssetLibraryGroupIconName;
 	static const FName AssetLibraryFilterIconName;
 	static const FName AudioDeviceIconName;
 	static const FName AudioNodeIconName;

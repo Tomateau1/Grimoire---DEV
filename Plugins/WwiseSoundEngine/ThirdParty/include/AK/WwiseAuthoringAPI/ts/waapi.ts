@@ -287,7 +287,9 @@ export const ak = {
             profiler: {
                 captureLog: {
                     /** Sent when a new entry is added to the capture log. Note that all entries are being sent. No filtering is applied as opposed to the Capture Log view. */
-                    itemAdded: "ak.wwise.core.profiler.captureLog.itemAdded"
+                    itemAdded: "ak.wwise.core.profiler.captureLog.itemAdded",
+                    /** Saves the content of the capture log to a text file according to the given file path. */
+                    save: "ak.wwise.core.profiler.captureLog.save"
                 },
                 /** Specifies the type of data you want to capture. Overrides the user's profiler settings. */
                 enableProfilerData: "ak.wwise.core.profiler.enableProfilerData",
