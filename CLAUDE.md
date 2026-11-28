@@ -45,6 +45,8 @@ Figma : fichier `fPGNLq2YnAywnfJaKdlida`, page « desktop » (maquettes en 1920�
 
 Images de l'écran « faction » déjà exportées du Figma (28/11/2026) dans `ArtSource/UI/Grimoire` (ignoré par Git) : livre, onglets, logos, ornements, séparateur, étoile, croix, bouton boutique. Les fichiers `_ref_*` sont des captures de référence, à ne pas importer. Destination prévue dans Unreal : `/Game/Assets/UI/Textures/Grimoire`. Le compte Figma est en plan Starter : peu d'appels MCP Figma disponibles, les économiser.
 
+**Fait le 28/11/2026** : les 13 textures sont importées dans `/Game/Assets/UI/Textures/Grimoire` (réglées pour l'UI : pas de mipmaps, compression UserInterface2D). `CW_Grimoire` est construit en statique : `BackgroundDim` + `FrameScale` (ScaleBox) > `Frame1920x1080` (SizeBox) > `Canvas` → les positions du Canvas sont **les coordonnées Figma** en 1920×1080. Contient : onglets `TabRomans/TabEgyptians/TabVikings` (+ logos), `BookBackground`, `ButtonShop`, `UnitGrid` (UniformGridPanel vide, page gauche), `RightPage` (titre, `FactionDescription`, séparateur, `BonusList`), `ButtonClose`. Textes = Lorem provisoire. Aucune logique Blueprint encore branchée (les boutons ne font rien).
+
 Reste à faire pour le Grimoire, dans l'ordre :
 1. Bouton de fermeture (croix) dans `CW_Grimoire` + à la fermeture, réafficher les boutons Fight, grimoire et casque (voir comment `CW_Inventory` le fait). Masquer aussi le casque quand un panneau est ouvert.
 2. Fond du livre et onglets de factions d'après le Figma.
