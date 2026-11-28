@@ -1,0 +1,32 @@
+GRIMOIRE - RÉVÉLATION DE CARTE (FBX pour Unreal)
+
+CONTENU
+- Carte_Reveal.fbx : squelette Carte_Rig (os Racine > Pivot > Flip), mesh Carte, mesh Glow, animation.
+- textures/ : face_drengr.png, dos_viking.png (1400 x 2600, PNG transparent), glow_gris.png.
+
+IMPORT DANS UNREAL
+- Importer en Skeletal Mesh, « Import Animations » coché.
+- Animation : 60 i/s, 112 frames (1,85 s). Frame 1 = clic du joueur. Elle se joue une fois, au clic.
+
+MESH « Carte » (attaché à l'os Flip)
+- Emplacement de matériau 0 « Mat_Dos » : texture du dos (visible au départ).
+- Emplacement de matériau 1 « Mat_Face » : illustration de la carte (visible après le retournement).
+- Matériaux recommandés : non éclairés (Unlit), Masked ou Translucent pour les coins arrondis, une seule face (pas Two Sided).
+- Changer de carte = changer la texture de Mat_Face (et de Mat_Dos selon la faction).
+
+MESH « Glow » (attaché à l'os Pivot : suit la carte mais ne se retourne pas)
+- Placé 40 cm derrière la carte, volontairement (sinon la carte le traverse en tournant).
+- Matériau non éclairé, translucide, texture glow_gris.png, avec un paramètre d'intensité.
+- Intensité : 0 avant le clic ; monte de 0 à 1 entre 0,40 s et 0,58 s après le clic ; reste à 1 tant que la carte est ouverte ;
+  redescend à 0 (fondu 0,3 à 0,5 s) quand le joueur clique ailleurs.
+
+LES 4 ÉTAPES DE L'ANIMATION (temps après le clic)
+1. Clic : frémissement de la carte .......................... 0 -> 0,31 s
+2. Glow qui s'allume + shake qui monte en puissance ............ 0,40 -> 0,82 s
+3. Retournement (la carte vient vers la caméra et tourne) ...... 0,85 -> 1,38 s
+4. Face : pop à 112 %, puis la carte se repose ................. 1,38 -> 1,85 s
+
+EFFETS À RECRÉER DANS UNREAL (non inclus dans le FBX)
+- Glow (voir ci-dessus).
+- Optionnel : petite lueur derrière la carte quand elle est de profil (0,98 -> 1,30 s, intensité max 40 %).
+- Optionnel : reflet diagonal qui balaie l'illustration (1,45 -> 2,05 s).
