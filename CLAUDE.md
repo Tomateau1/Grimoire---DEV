@@ -43,6 +43,8 @@ Figma : fichier `fPGNLq2YnAywnfJaKdlida`, page « desktop » (maquettes en 1920�
 - Écran **« Template unité »** (node `541:20956`) : fiche d'une unité (grande illustration, étoiles, barres PV, histoire, passif, sort, bonus de faction).
 - HUD (« Placement » `534:6493` / `571:39151`, « 1 » `469:1076`), menu principal (« 3 » `571:38945`), réglages en livre (« 11 » `575:28440`), boutique (`541:21364`), recettes (`541:30212`), inscriptions (`550:38208`).
 
+Images de l'écran « faction » déjà exportées du Figma (28/11/2026) dans `ArtSource/UI/Grimoire` (ignoré par Git) : livre, onglets, logos, ornements, séparateur, étoile, croix, bouton boutique. Les fichiers `_ref_*` sont des captures de référence, à ne pas importer. Destination prévue dans Unreal : `/Game/Assets/UI/Textures/Grimoire`. Le compte Figma est en plan Starter : peu d'appels MCP Figma disponibles, les économiser.
+
 Reste à faire pour le Grimoire, dans l'ordre :
 1. Bouton de fermeture (croix) dans `CW_Grimoire` + à la fermeture, réafficher les boutons Fight, grimoire et casque (voir comment `CW_Inventory` le fait). Masquer aussi le casque quand un panneau est ouvert.
 2. Fond du livre et onglets de factions d'après le Figma.
